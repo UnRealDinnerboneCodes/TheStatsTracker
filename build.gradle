@@ -6,6 +6,7 @@ plugins {
 
 group 'com.unrealdinnerbone'
 
+archivesBaseName = 'TheStatsTracker'
 version = '1.0.0'
 
 repositories {
