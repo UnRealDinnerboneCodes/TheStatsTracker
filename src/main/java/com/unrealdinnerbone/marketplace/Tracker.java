@@ -19,7 +19,7 @@ public class Tracker
         ConfigManager manager = ConfigManager.createSimpleEnvPropertyConfigManger();
         PostgresConfig postgresConfig = manager.loadConfig(new PostgresConfig());
         PostgressHandler postgressHandler = new PostgressHandler(postgresConfig);
-        register(postgressHandler, TimeUnit.MINUTES, 30, new ModpackTracker());
+//        register(postgressHandler, TimeUnit.MINUTES, 30, new ModpackTracker());
         register(postgressHandler, TimeUnit.HOURS, 1, new MarketplaceTracker());
 
     }

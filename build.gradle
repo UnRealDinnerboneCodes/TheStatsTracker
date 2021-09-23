@@ -25,7 +25,7 @@ configurations {
 dependencies {
     compileOnly 'org.jetbrains:annotations:21.0.1'
 
-    shade('com.unrealdinnerbone:UnRealLib:3.1.0+build.62')
+    shade('com.unrealdinnerbone:UnRealLib:3.1.0+build.61')
     shade('com.unrealdinnerbone:ModpacksAPI:3.0.0+build.18')
     shade 'com.unrealdinnerbone:PostgressLib:1.0.0+build.17'
 
