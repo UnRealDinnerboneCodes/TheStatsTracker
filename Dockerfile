@@ -8,6 +8,6 @@ COPY src /build/src
 RUN gradle shadowJar
 
 FROM openjdk:16
-COPY --from=builder /build/build/libs/StatsTacker-1.0.0-all.jar DockerJar.jar
+COPY --from=builder /build/build/libs/TheStatsTacker-1.0.0-all.jar DockerJar.jar
 
 CMD ["java", "-jar", "DockerJar.jar"]
