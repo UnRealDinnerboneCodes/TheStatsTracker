@@ -25,7 +25,13 @@ public class Tracker
     }
 
     public static void register(PostgressHandler handler, TimeUnit unit, int time, IStatsTracker tracker) {
-        TaskScheduler.scheduleRepeatingTask(time, unit, () -> tracker.run(handler));
+        TaskScheduler.scheduleRepeatingTask(time, unit, () -> {
+            try {
+                tracker.run(handler);
+            }catch (Exception e) {
+                LOGGER.error("Error", e);
+            }
+        });
     }
 
 
