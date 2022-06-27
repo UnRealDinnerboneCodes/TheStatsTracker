@@ -1,13 +1,16 @@
-FROM gradle:7.0.0-jdk16 as builder
+FROM gradle:7.3.3-jdk17 as builder
 
 WORKDIR /build
 
 COPY build.gradle /build
+COPY gradle.properties /build
 COPY src /build/src
 
 RUN gradle shadowJar
+RUN ls -l /build/build/libs/
 
-FROM openjdk:16
-COPY --from=builder /build/build/libs/TheStatsTracker-1.0.0-all.jar DockerJar.jar
+FROM openjdk:17-alpine
+COPY --from=builder "/build/build/libs/build-3.0.0+build.0-all.jar" "ApolloStats-1.0.0-all.jar"
 
-CMD ["java", "-jar", "DockerJar.jar"]
+
+CMD ["java", "-jar", "ApolloStats-1.0.0-all.jar"]
