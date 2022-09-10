@@ -17,6 +17,7 @@ public class Tracker
 
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
+        LOGGER.info("Loading!");
         ConfigManager manager = ConfigManager.createSimpleEnvPropertyConfigManger();
         PostgresConfig postgresConfig = manager.loadConfig("postgres", PostgresConfig::new);
         postgresConfig.getDb().getValue();
