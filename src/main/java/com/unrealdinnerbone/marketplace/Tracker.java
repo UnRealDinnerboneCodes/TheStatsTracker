@@ -7,9 +7,7 @@ import com.unrealdinnerbone.unreallib.TaskScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sound.midi.Track;
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
@@ -21,7 +19,6 @@ public class Tracker
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         ConfigManager manager = ConfigManager.createSimpleEnvPropertyConfigManger();
         PostgresConfig postgresConfig = manager.loadConfig("postgres", PostgresConfig::new);
-        TrackerConfig trackerConfig = manager.loadConfig("tracker", TrackerConfig::new);
         postgresConfig.getDb().getValue();
         postgresConfig.getHost().getValue();
         postgresConfig.getPassword().getValue();
@@ -30,7 +27,7 @@ public class Tracker
         PostgressHandler postgressHandler = new PostgressHandler(postgresConfig);
         register(postgressHandler, TimeUnit.MINUTES, 30, new ModpackTracker());
         register(postgressHandler, TimeUnit.HOURS, 1, new MarketplaceTracker());
-        register(postgressHandler, TimeUnit.HOURS, 12, new CurseforgeTracker(trackerConfig));
+        register(postgressHandler, TimeUnit.HOURS, 12, new CurseforgeTracker());
 
     }
 
