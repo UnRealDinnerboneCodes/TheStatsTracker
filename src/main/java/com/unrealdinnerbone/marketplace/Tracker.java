@@ -27,7 +27,7 @@ public class Tracker
         postgresConfig.getPort().getValue();
         PostgressHandler postgressHandler = new PostgressHandler(postgresConfig);
         register(postgressHandler, TimeUnit.MINUTES, 30, new ModpackTracker());
-        register(postgressHandler, TimeUnit.HOURS, 1, new MarketplaceTracker());
+//        register(postgressHandler, TimeUnit.HOURS, 1, new MarketplaceTracker());
         register(postgressHandler, TimeUnit.HOURS, 12, new CurseforgeTracker());
 
     }
