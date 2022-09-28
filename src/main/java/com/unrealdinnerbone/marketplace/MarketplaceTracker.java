@@ -50,6 +50,7 @@ public class MarketplaceTracker implements IStatsTracker {
 //        LOGGER.info("Found {} teams", teams.size());
 
         try {
+            LOGGER.info("Hello There");
             ResultSet set = handler.getSet("select * from marketplace.creator");
             List<Team> teams = new ArrayList<>();
             while (set.next()) {
