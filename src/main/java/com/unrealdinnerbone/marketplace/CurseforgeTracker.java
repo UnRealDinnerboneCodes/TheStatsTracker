@@ -26,12 +26,12 @@ public class CurseforgeTracker implements IStatsTracker {
 
     @Override
     public void run(PostgressHandler handler) {
-        try {
-            for (ICurseTracker<?> tracker : trackers) {
+        for (ICurseTracker<?> tracker : trackers) {
+            try {
                 run(handler, tracker);
+            } catch (Exception e) {
+                LOGGER.error("Failed to run tracker: {}", tracker.getClass().getSimpleName(), e);
             }
-        }catch(Exception e) {
-            LOGGER.error("Error", e);
         }
 
     }
