@@ -89,7 +89,6 @@ public class MarketplaceTracker implements IStatsTracker {
                         preparedStatement.setInt(6, ratingCount);
                         preparedStatement.setDouble(7, rating);
                     });
-                    LOGGER.info("[{}] {} {}/{}", startTime, product.title().neutral(), rating, ratingCount);
                 }
                 handler.executeBatchUpdate("INSERT INTO marketplace.product (id, name, creator, release_time, type, price) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING", productsConsumers);
                 handler.executeBatchUpdate("INSERT INTO marketplace.rating (id, rating, ratings, time) SELECT ?, ?, ?, ? WHERE not EXISTS ( SELECT * FROM marketplace.rating WHERE id = ? and (ratings = ? and rating = ?) order by time desc limit 1)", statements);
