@@ -9,10 +9,10 @@ apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/he
 apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/helpers/shade.gradle'
 
 dependencies {
-    shade("com.unrealdinnerbone:CurseAuthorsAPI:1.0.0+build.5")
+    shade("com.unrealdinnerbone:CurseAuthorsAPI:1.0.0+build.7")
     shade("com.unrealdinnerbone:ModpacksAPI:5.1.0+build.25")
-    shade("com.unrealdinnerbone:UnRealLib:4.0.0+build.125")
-    shade('com.unrealdinnerbone:PostgressLib:2.0.1+build.31')
+    shade("com.unrealdinnerbone:UnRealLib:4.0.0+build.127")
+    shade('com.unrealdinnerbone:PostgressLib:2.0.1+build.32')
     shade("com.unrealdinnerbone:MarketplaceAPI:1.0.0+build.3")
     shade("com.google.guava:guava:31.1-jre")
 }

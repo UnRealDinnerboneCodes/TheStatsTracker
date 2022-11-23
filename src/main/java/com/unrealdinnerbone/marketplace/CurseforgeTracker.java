@@ -18,7 +18,10 @@ public class CurseforgeTracker implements IStatsTracker {
             new LastMonthRevenueTracker(),
             new ProjectDownloadsTracker(),
             new ProjectRevenueTracker(),
-            new TotalDownloadsTracker());
+            new TotalDownloadsTracker(),
+            new TotalPointTracker(),
+            new DailyPointTracker()
+            );
     private static final Logger LOGGER = LoggerFactory.getLogger(CurseforgeTracker.class);
 
     @Override
