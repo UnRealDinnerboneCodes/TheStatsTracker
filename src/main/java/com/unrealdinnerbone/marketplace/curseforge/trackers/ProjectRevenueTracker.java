@@ -37,7 +37,7 @@ public class ProjectRevenueTracker implements ICurseTracker<List<ProjectRevenueD
                     statement.setLong(4, Objects.hash(name, downloads, time));
                 });
             }
-            handler.executeBatchUpdate("INSERT INTO public.project_revenue (project, revenue, date, hash) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", postgresConsumers);
+            handler.executeBatchUpdate("INSERT INTO curseforge.project_revenue (project, revenue, date, hash) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", postgresConsumers);
         }
     }
 

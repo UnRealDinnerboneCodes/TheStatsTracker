@@ -23,7 +23,7 @@ public class EstimatedRevenueTracker implements ICurseTracker<QueryResult<Revenu
 
         long time = estimatedRevenue.getRetrievedAt().getEpochSecond();
 
-        handler.executeUpdate("INSERT INTO public.estimated_revenue (date, amount, type, hash) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", statement -> {
+        handler.executeUpdate("INSERT INTO curseforge.estimated_revenue (date, amount, type, hash) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", statement -> {
             long amount = revenueEstimationData.estimatedLastMonthRevenue();
             statement.setLong(1, time);
             statement.setLong(2, amount);
@@ -31,7 +31,7 @@ public class EstimatedRevenueTracker implements ICurseTracker<QueryResult<Revenu
             statement.setLong(4, Objects.hash(time, amount, "month"));
         });
 
-        handler.executeUpdate("INSERT INTO public.estimated_revenue (date, amount, type, hash) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", statement -> {
+        handler.executeUpdate("INSERT INTO curseforge.estimated_revenue (date, amount, type, hash) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", statement -> {
             long amount = revenueEstimationData.estimatedYearlyRevenue();
             statement.setLong(1, time);
             statement.setLong(2, amount);

@@ -20,7 +20,7 @@ public class LastMonthRevenueTracker implements ICurseTracker<List<LastMonthReve
     public void run(PostgressHandler handler, List<LastMonthRevenueData> projectDownloadData) {
         for(LastMonthRevenueData revenueData : projectDownloadData) {
             LOGGER.info("Revenue for {}: {}", revenueData.getRevenueDate(), revenueData.revenueDate());
-            handler.executeUpdate("INSERT INTO public.monthly_revenue (date, amount) VALUES (?, ?) ON CONFLICT DO NOTHING;", statement -> {
+            handler.executeUpdate("INSERT INTO curseforge.monthly_revenue (date, amount) VALUES (?, ?) ON CONFLICT DO NOTHING;", statement -> {
                 statement.setLong(1, Instant.ofEpochMilli(revenueData.revenueDate()).getEpochSecond());
                 statement.setLong(2, revenueData.revenue());
             });

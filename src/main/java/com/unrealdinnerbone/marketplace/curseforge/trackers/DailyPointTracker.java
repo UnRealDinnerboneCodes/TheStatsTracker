@@ -43,11 +43,11 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
                         List<ProjectBreakdownData> projectBreakdownData = new ArrayList<>(projectsBreakdownData.projectsBreakdown());
                         projectBreakdownData.sort((o1, o2) -> Double.compare(o2.points(), o1.points()));
                         for (ProjectBreakdownData projectBreakdown : projectBreakdownData) {
-                            builder = builder.field(EmbedObject.Field.of(projectBreakdown.projectName(), String.valueOf(projectBreakdown.points()) + " (" + CURR_FORMAT.format(projectBreakdown.points() * 0.05) + ")", false));
+                            builder = builder.field(EmbedObject.Field.of(projectBreakdown.projectName(), projectBreakdown.points() + " (" + CURR_FORMAT.format(projectBreakdown.points() * 0.05) + ")", false));
                             totalPoints += projectBreakdown.points();
                         }
                         DiscordWebhook.of(DISCORD_WEBHOOK)
-                                .addEmbed(builder.title("Total Points " + totalPoints + " (" + CURR_FORMAT.format(totalPoints *0.05) + ")").build())
+                                .addEmbed(builder.title("Total Points " + totalPoints + " (" + CURR_FORMAT.format(totalPoints * 0.05) + ")").build())
                                 .setUsername("Curse Points Bot")
                                 .execute();
                         lastTime = date;
@@ -55,13 +55,14 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
                     List<PostgresConsumer> consumers = new ArrayList<>();
                     for (ProjectBreakdownData projectBreakdown : projectsBreakdownData.projectsBreakdown()) {
                         consumers.add(st -> {
-                            st.setString(1, projectBreakdown.projectName());
+                            String slug = projectBreakdown.getSlug();
+                            st.setString(1, slug);
                             st.setLong(2, date);
                             st.setDouble(3, projectBreakdown.points());
-                            st.setDouble(4, Objects.hash(projectBreakdown.projectName(), date, projectBreakdown.points()));
+                            st.setDouble(4, Objects.hash(slug, date, projectBreakdown.points()));
                         });
                     }
-                    handler.executeBatchUpdate("INSERT INTO public.project_breakdown (name, date, points, hash) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", consumers);
+                    handler.executeBatchUpdate("INSERT INTO curseforge.project_breakdown (slug, date, points, hash) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", consumers);
                 } catch (JsonParseException | IOException | InterruptedException e) {
                     LOGGER.error("Error while getting project breakdown", e);
                 }

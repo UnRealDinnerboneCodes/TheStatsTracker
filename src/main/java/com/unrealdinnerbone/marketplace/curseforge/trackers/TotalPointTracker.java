@@ -19,7 +19,7 @@ public class TotalPointTracker implements ICurseTracker<UserPointData> {
     @Override
     public void run(PostgressHandler handler, UserPointData userPointData) {
         LOGGER.info("Current User Points: {}", userPointData.userPoints());
-        handler.executeUpdate("INSERT INTO public.user_points (points, date, hash) VALUES (?, ?, ?) ON CONFLICT DO NOTHING;", statement -> {
+        handler.executeUpdate("INSERT INTO curseforge.user_points (points, date, hash) VALUES (?, ?, ?) ON CONFLICT DO NOTHING;", statement -> {
             long now = Instant.now().getEpochSecond();
             statement.setLong(1, userPointData.userPoints());
             statement.setLong(2, now);

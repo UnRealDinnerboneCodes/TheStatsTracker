@@ -20,7 +20,7 @@ public class LastMonthDownloadTracker implements ICurseTracker<List<LastMonthDow
     public void run(PostgressHandler handler, List<LastMonthDownloadsData> lastMonthDownloadsData) {
         for(LastMonthDownloadsData downloadsData : lastMonthDownloadsData) {
             LOGGER.info("Downloads for {}: {}", downloadsData.getDownloadDate(), downloadsData.totalDownloads());
-            handler.executeUpdate("INSERT INTO public.downloads (date, downloads) VALUES (?, ?) ON CONFLICT DO NOTHING;", statement -> {
+            handler.executeUpdate("INSERT INTO curseforge.downloads (date, downloads) VALUES (?, ?) ON CONFLICT DO NOTHING;", statement -> {
                 statement.setLong(1, Instant.ofEpochMilli(downloadsData.downloadDate()).getEpochSecond());
                 statement.setLong(2, downloadsData.totalDownloads());
             });

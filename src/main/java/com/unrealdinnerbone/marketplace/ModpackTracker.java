@@ -3,13 +3,12 @@ package com.unrealdinnerbone.marketplace;
 import com.unrealdinnerbone.modpackapi.ModpackAPI;
 import com.unrealdinnerbone.modpackapi.api.modpack.ModpackManifest;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
-import org.jetbrains.annotations.Nullable;
+import com.unrealdinnerbone.unreallib.LogHelper;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ModpackTracker implements IStatsTracker{
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModpackTracker.class);
+    private static final Logger LOGGER = LogHelper.getLogger();
 
     @Override
     public void run(PostgressHandler handler) {
@@ -24,7 +23,7 @@ public class ModpackTracker implements IStatsTracker{
     }
 
     public static void handleData(PostgressHandler handler, long time, ModpackManifest modpack) {
-        handler.executeUpdate("INSERT INTO public.modpack (id, installs, plays, name, time) VALUES (?, ?, ?, ?, ?);", preparedStatement -> {
+        handler.executeUpdate("INSERT INTO modpacks.modpack (id, installs, plays, name, time) VALUES (?, ?, ?, ?, ?);", preparedStatement -> {
             preparedStatement.setInt(1, modpack.id());
             preparedStatement.setInt(2, modpack.installs());
             preparedStatement.setInt(3, modpack.plays());
