@@ -5,7 +5,7 @@ import com.unrealdinnerbone.curseauthorsapi.api.ProjectDownloadData;
 import com.unrealdinnerbone.marketplace.curseforge.api.ICurseTracker;
 import com.unrealdinnerbone.postgresslib.PostgresConsumer;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
-import com.unrealdinnerbone.unreallib.apiutils.IReturnResult;
+import com.unrealdinnerbone.unreallib.apiutils.IResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ public class ProjectDownloadsTracker implements ICurseTracker<List<ProjectDownlo
     }
 
     @Override
-    public IReturnResult<List<ProjectDownloadData>> get() {
+    public IResult<List<ProjectDownloadData>> get() {
         return CurseAuthorsAPI.getDownloads();
     }
 

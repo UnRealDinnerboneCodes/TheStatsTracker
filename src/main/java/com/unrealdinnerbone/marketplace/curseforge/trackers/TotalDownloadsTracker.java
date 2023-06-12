@@ -5,7 +5,7 @@ import com.unrealdinnerbone.curseauthorsapi.api.DownloadsTotalData;
 import com.unrealdinnerbone.curseauthorsapi.api.base.QueryResult;
 import com.unrealdinnerbone.marketplace.curseforge.api.ICurseTracker;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
-import com.unrealdinnerbone.unreallib.apiutils.IReturnResult;
+import com.unrealdinnerbone.unreallib.apiutils.IResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +20,7 @@ public class TotalDownloadsTracker implements ICurseTracker<QueryResult<Download
     }
 
     @Override
-    public IReturnResult<QueryResult<DownloadsTotalData>> get() {
+    public IResult<QueryResult<DownloadsTotalData>> get() {
         return CurseAuthorsAPI.getTotalDownloads();
     }
 

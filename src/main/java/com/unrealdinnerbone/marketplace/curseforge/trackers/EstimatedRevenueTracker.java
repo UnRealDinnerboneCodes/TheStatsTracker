@@ -5,7 +5,7 @@ import com.unrealdinnerbone.curseauthorsapi.api.RevenueEstimationData;
 import com.unrealdinnerbone.curseauthorsapi.api.base.QueryResult;
 import com.unrealdinnerbone.marketplace.curseforge.api.ICurseTracker;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
-import com.unrealdinnerbone.unreallib.apiutils.IReturnResult;
+import com.unrealdinnerbone.unreallib.apiutils.IResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ public class EstimatedRevenueTracker implements ICurseTracker<QueryResult<Revenu
     }
 
     @Override
-    public IReturnResult<QueryResult<RevenueEstimationData>> get() {
+    public IResult<QueryResult<RevenueEstimationData>> get() {
         return CurseAuthorsAPI.getEstimatedRevenue();
     }
 

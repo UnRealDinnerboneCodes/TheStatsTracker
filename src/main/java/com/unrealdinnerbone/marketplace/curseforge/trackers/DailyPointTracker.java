@@ -8,13 +8,13 @@ import com.unrealdinnerbone.marketplace.curseforge.api.ICurseTracker;
 import com.unrealdinnerbone.postgresslib.PostgresConsumer;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.LogHelper;
-import com.unrealdinnerbone.unreallib.apiutils.IReturnResult;
+import com.unrealdinnerbone.unreallib.apiutils.IResult;
 import com.unrealdinnerbone.unreallib.discord.DiscordWebhook;
 import com.unrealdinnerbone.unreallib.discord.EmbedObject;
-import com.unrealdinnerbone.unreallib.json.JsonParseException;
+import com.unrealdinnerbone.unreallib.exception.WebResultException;
+import com.unrealdinnerbone.unreallib.json.exception.JsonParseException;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,20 +36,20 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
             if(transactionDatum.type() == 1) {
                 long date = transactionDatum.getDateCreated().getEpochSecond();
                 try {
-                    ProjectsBreakdownData projectsBreakdownData = CurseAuthorsAPI.getBreakdown(transactionDatum.id()).getExceptionally();
+                    ProjectsBreakdownData projectsBreakdownData = CurseAuthorsAPI.getBreakdown(transactionDatum.id()).getNow();
                     if(date > lastTime) {
                         EmbedObject.EmbedObjectBuilder builder = EmbedObject.builder();
                         double totalPoints = 0;
                         List<ProjectBreakdownData> projectBreakdownData = new ArrayList<>(projectsBreakdownData.projectsBreakdown());
                         projectBreakdownData.sort((o1, o2) -> Double.compare(o2.points(), o1.points()));
                         for (ProjectBreakdownData projectBreakdown : projectBreakdownData) {
-                            builder = builder.field(EmbedObject.Field.of(projectBreakdown.projectName(), projectBreakdown.points() + " (" + CURR_FORMAT.format(projectBreakdown.points() * 0.05) + ")", false));
+                            builder = builder.field(projectBreakdown.projectName(), projectBreakdown.points() + " (" + CURR_FORMAT.format(projectBreakdown.points() * 0.05) + ")", false);
                             totalPoints += projectBreakdown.points();
                         }
-                        DiscordWebhook.of(DISCORD_WEBHOOK)
+                        DiscordWebhook.builder()
                                 .addEmbed(builder.title("Total Points " + totalPoints + " (" + CURR_FORMAT.format(totalPoints * 0.05) + ")").build())
                                 .setUsername("Curse Points Bot")
-                                .execute();
+                                .post(DISCORD_WEBHOOK);
                         lastTime = date;
                     }
                     List<PostgresConsumer> consumers = new ArrayList<>();
@@ -63,15 +63,15 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
                         });
                     }
                     handler.executeBatchUpdate("INSERT INTO curseforge.project_breakdown (slug, date, points, hash) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", consumers);
-                } catch (JsonParseException | IOException | InterruptedException e) {
+                } catch (JsonParseException | WebResultException | IllegalStateException e) {
                     LOGGER.error("Error while getting project breakdown", e);
-                }
+                } 
             }
         }
     }
 
     @Override
-    public IReturnResult<List<TransactionData>> get() {
+    public IResult<List<TransactionData>> get() {
         return CurseAuthorsAPI.getTransactions();
     }
 

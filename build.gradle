@@ -1,5 +1,5 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'java'
     id "maven-publish"
     id 'java-library'
@@ -9,10 +9,11 @@ apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/he
 apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/helpers/shade.gradle'
 
 dependencies {
-    shade("com.unrealdinnerbone:CurseAuthorsAPI:1.0.0+build.8")
+    shade("com.unrealdinnerbone:CurseAuthorsAPI:1.0.0+build.10")
     shade("com.unrealdinnerbone:ModpacksAPI:5.1.0+build.25")
-    shade("com.unrealdinnerbone:UnRealLib:4.0.0+build.127")
-    shade('com.unrealdinnerbone:PostgressLib:2.0.1+build.32')
+    shade("com.unrealdinnerbone:UnRealLib:7.0.0+build.154")
+    shade('com.unrealdinnerbone:PostgressLib:2.0.1+build.39')
     shade("com.unrealdinnerbone:MarketplaceAPI:1.0.0+build.3")
+//    shade "com.unrealdinnerbone:CurseAPI:2.0.0+build.22"
     shade("com.google.guava:guava:31.1-jre")
 }

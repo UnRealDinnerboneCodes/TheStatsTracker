@@ -3,9 +3,9 @@ package com.unrealdinnerbone.marketplace;
 import com.unrealdinnerbone.config.ConfigManager;
 import com.unrealdinnerbone.postgresslib.PostgresConfig;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
+import com.unrealdinnerbone.unreallib.LogHelper;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.TimerTask;
@@ -13,10 +13,10 @@ import java.util.concurrent.TimeUnit;
 
 public class Tracker
 {
-    public static final Logger LOGGER = LoggerFactory.getLogger(Tracker.class);
+    public static final Logger LOGGER = LogHelper.getLogger();
 
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+    public static void main(String[] args) throws SQLException {
         LOGGER.info("Loading Me!");
         ConfigManager manager = ConfigManager.createSimpleEnvPropertyConfigManger();
         PostgresConfig postgresConfig = manager.loadConfig("postgres", PostgresConfig::new);
@@ -28,7 +28,7 @@ public class Tracker
         PostgressHandler postgressHandler = new PostgressHandler(postgresConfig);
         register(postgressHandler, TimeUnit.MINUTES, 30, new ModpackTracker());
         register(postgressHandler, TimeUnit.HOURS, 12, new CurseforgeTracker());
-        register(postgressHandler, TimeUnit.HOURS, 1, new MarketplaceTracker());
+//        register(postgressHandler, TimeUnit.HOURS, 1, new MarketplaceTracker());
 
     }
 

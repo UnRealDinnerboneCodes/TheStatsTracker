@@ -5,7 +5,7 @@ import com.unrealdinnerbone.curseauthorsapi.api.UserPointData;
 import com.unrealdinnerbone.marketplace.curseforge.api.ICurseTracker;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.LogHelper;
-import com.unrealdinnerbone.unreallib.apiutils.IReturnResult;
+import com.unrealdinnerbone.unreallib.apiutils.IResult;
 import org.slf4j.Logger;
 
 import java.time.Instant;
@@ -28,7 +28,7 @@ public class TotalPointTracker implements ICurseTracker<UserPointData> {
     }
 
     @Override
-    public IReturnResult<UserPointData> get() {
+    public IResult<UserPointData> get() {
         return CurseAuthorsAPI.getUserPoints();
     }
 

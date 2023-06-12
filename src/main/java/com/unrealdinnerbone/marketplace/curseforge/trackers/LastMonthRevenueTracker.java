@@ -4,7 +4,7 @@ import com.unrealdinnerbone.curseauthorsapi.CurseAuthorsAPI;
 import com.unrealdinnerbone.curseauthorsapi.api.LastMonthRevenueData;
 import com.unrealdinnerbone.marketplace.curseforge.api.ICurseTracker;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
-import com.unrealdinnerbone.unreallib.apiutils.IReturnResult;
+import com.unrealdinnerbone.unreallib.apiutils.IResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,7 @@ public class LastMonthRevenueTracker implements ICurseTracker<List<LastMonthReve
     }
 
     @Override
-    public IReturnResult<List<LastMonthRevenueData>> get() {
+    public IResult<List<LastMonthRevenueData>> get() {
         return CurseAuthorsAPI.getLastMonthRevenue();
     }
 
