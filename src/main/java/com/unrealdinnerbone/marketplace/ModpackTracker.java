@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 
 import java.util.concurrent.ExecutionException;
 
-public class ModpackTracker implements IStatsTracker{
+public class ModpackTracker implements IStatsTracker {
 
     private static final Logger LOGGER = LogHelper.getLogger();
 
