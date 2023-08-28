@@ -20,15 +20,8 @@ public class Tracker
         LOGGER.info("Loading Me!");
         ConfigManager manager = ConfigManager.createSimpleEnvPropertyConfigManger();
         PostgresConfig postgresConfig = manager.loadConfig("postgres", PostgresConfig::new);
-        postgresConfig.getDb().getValue();
-        postgresConfig.getHost().getValue();
-        postgresConfig.getPassword().getValue();
-        postgresConfig.getUsername().getValue();
-        postgresConfig.getPort().getValue();
         PostgressHandler postgressHandler = new PostgressHandler(postgresConfig);
-        register(postgressHandler, TimeUnit.MINUTES, 30, new ModpackTracker());
-//        register(postgressHandler, TimeUnit.HOURS, 12, new CurseforgeTracker());
-//        register(postgressHandler, TimeUnit.HOURS, 1, new MarketplaceTracker());
+        register(postgressHandler, TimeUnit.HOURS, 12, new CurseforgeTracker());
 
     }
 
