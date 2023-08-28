@@ -20,6 +20,7 @@ public class Tracker
         LOGGER.info("Loading Me!");
         ConfigManager manager = ConfigManager.createSimpleEnvPropertyConfigManger();
         PostgresConfig postgresConfig = manager.loadConfig("postgres", PostgresConfig::new);
+        LOGGER.info("Host: {} Port: {} Database: {} Username: {} Password: {}", postgresConfig.getHost().getDefaultValue(), postgresConfig.getPort().getDefaultValue(), postgresConfig.getDb().getDefaultValue(), postgresConfig.getUsername().getDefaultValue(), postgresConfig.getPassword().getDefaultValue());
         PostgressHandler postgressHandler = new PostgressHandler(postgresConfig);
         register(postgressHandler, TimeUnit.HOURS, 12, new CurseforgeTracker());
 
