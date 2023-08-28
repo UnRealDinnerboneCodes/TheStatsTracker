@@ -11,7 +11,7 @@ apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/he
 dependencies {
     shade("com.unrealdinnerbone:UnRealLib:7.0.0+build.160")
     shade("com.unrealdinnerbone:CurseAuthorsAPI:1.0.0+build.14")
-    shade('com.unrealdinnerbone:PostgressLib:2.0.1+build.40')
+    shade('com.unrealdinnerbone:PostgressLib:2.0.1+build.41')
 //    shade("com.unrealdinnerbone:MarketplaceAPI:1.0.0+build.3")
 //    shade "com.unrealdinnerbone:CurseAPI:2.0.0+build.22"
     shade("com.google.guava:guava:31.1-jre")
