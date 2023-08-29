@@ -23,6 +23,7 @@ public class Tracker
         LOGGER.info("Host: {} Port: {} Database: {} Username: {} Password: {}", postgresConfig.getHost().getOrDefault(), postgresConfig.getPort().getOrDefault(), postgresConfig.getDb().getOrDefault(), postgresConfig.getUsername().getOrDefault(), postgresConfig.getPassword().getOrDefault());
         PostgressHandler postgressHandler = new PostgressHandler(postgresConfig);
         register(postgressHandler, TimeUnit.HOURS, 12, new CurseforgeTracker());
+        register(postgressHandler, TimeUnit.HOURS, 1, new CurseforgeStoreTracker());
 
     }
 
