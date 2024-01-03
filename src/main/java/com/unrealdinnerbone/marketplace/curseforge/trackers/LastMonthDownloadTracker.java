@@ -4,7 +4,7 @@ import com.unrealdinnerbone.curseauthorsapi.CurseAuthorsAPI;
 import com.unrealdinnerbone.curseauthorsapi.api.LastMonthDownloadsData;
 import com.unrealdinnerbone.marketplace.curseforge.api.ICurseTracker;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
-import com.unrealdinnerbone.unreallib.apiutils.IResult;
+import com.unrealdinnerbone.unreallib.apiutils.result.IResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

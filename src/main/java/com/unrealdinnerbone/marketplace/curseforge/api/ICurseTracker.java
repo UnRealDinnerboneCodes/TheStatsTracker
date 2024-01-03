@@ -1,7 +1,7 @@
 package com.unrealdinnerbone.marketplace.curseforge.api;
 
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
-import com.unrealdinnerbone.unreallib.apiutils.IResult;
+import com.unrealdinnerbone.unreallib.apiutils.result.IResult;
 
 public interface ICurseTracker<T> {
 

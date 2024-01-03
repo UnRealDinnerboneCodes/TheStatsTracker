@@ -1,6 +1,6 @@
 package com.unrealdinnerbone.marketplace;
 
-import com.unrealdinnerbone.config.ConfigManager;
+import com.unrealdinnerbone.config.impl.provider.EnvProvider;
 import com.unrealdinnerbone.postgresslib.PostgresConfig;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.LogHelper;
@@ -18,9 +18,9 @@ public class Tracker
 
     public static void main(String[] args) throws SQLException {
         LOGGER.info("Loading Me!");
-        ConfigManager manager = ConfigManager.createSimpleEnvPropertyConfigManger();
-        PostgresConfig postgresConfig = manager.loadConfig("postgres", PostgresConfig::new);
-        LOGGER.info("Host: {} Port: {} Database: {} Username: {} Password: {}", postgresConfig.getHost().getOrDefault(), postgresConfig.getPort().getOrDefault(), postgresConfig.getDb().getOrDefault(), postgresConfig.getUsername().getOrDefault(), postgresConfig.getPassword().getOrDefault());
+        EnvProvider<PostgresConfig> envProvider = new EnvProvider<>(PostgresConfig::new);
+        PostgresConfig postgresConfig = envProvider.getConfig();
+        LOGGER.info("Host: {} Port: {} Database: {} Username: {} Password: {}", postgresConfig.getHost().get(), postgresConfig.getPort().get(), postgresConfig.getDb().get(), postgresConfig.getUsername().get(), postgresConfig.getPassword().get());
         PostgressHandler postgressHandler = new PostgressHandler(postgresConfig);
         register(postgressHandler, TimeUnit.HOURS, 12, new CurseforgeTracker());
         register(postgressHandler, TimeUnit.HOURS, 1, new CurseforgeStoreTracker());
