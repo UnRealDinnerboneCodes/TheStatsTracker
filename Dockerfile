@@ -10,7 +10,7 @@ RUN gradle shadowJar
 RUN ls -l /build/build/libs/
 
 FROM openjdk:19-alpine
-COPY --from=builder "/build/build/libs/build-3.0.0+build.0-all.jar" "ApolloStats-1.0.0-all.jar"
+COPY --from=builder "/build/build/libs/build-3.0.0-all.jar" "ApolloStats-1.0.0-all.jar"
 
 
 CMD ["java", "-jar", "ApolloStats-1.0.0-all.jar"]
