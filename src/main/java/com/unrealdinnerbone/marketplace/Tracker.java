@@ -18,8 +18,8 @@ public class Tracker
 
     public static void main(String[] args) throws SQLException {
         LOGGER.info("Loading Me!");
-        EnvProvider<PostgresConfig> envProvider = new EnvProvider<>(PostgresConfig::new);
-        PostgresConfig postgresConfig = envProvider.getConfig();
+        EnvProvider<PostgresConfig> envProvider = new EnvProvider<>();
+        PostgresConfig postgresConfig = envProvider.loadConfig(PostgresConfig::new);
         LOGGER.info("Host: {} Port: {} Database: {} Username: {} Password: {}", postgresConfig.getHost().get(), postgresConfig.getPort().get(), postgresConfig.getDb().get(), postgresConfig.getUsername().get(), postgresConfig.getPassword().get());
         PostgressHandler postgressHandler = new PostgressHandler(postgresConfig);
         register(postgressHandler, TimeUnit.HOURS, 12, new CurseforgeTracker());
