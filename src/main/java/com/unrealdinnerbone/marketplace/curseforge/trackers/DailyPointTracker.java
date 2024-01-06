@@ -74,8 +74,8 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
                                         st.setDouble(4, Objects.hash(slug, date, projectBreakdown.points()));
                                     });
                                 }
+                                handler.executeBatchUpdate("INSERT INTO curseforge.project_breakdown (slug, date, points, hash) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", consumers);
                             }
-                            handler.executeBatchUpdate("INSERT INTO curseforge.project_breakdown (slug, date, points, hash) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", consumers);
                         } catch (JsonParseException | WebResultException | IllegalStateException e) {
                             LOGGER.error("Error while getting project breakdown", e);
                         }
