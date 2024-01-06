@@ -63,15 +63,17 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
                                         .setUsername("Curse Points Bot")
                                         .post(DISCORD_WEBHOOK);
                             }
-                            List<PostgresConsumer> consumers = new ArrayList<>();
-                            for (ProjectBreakdownData projectBreakdown : projectsBreakdownData.projectsBreakdown()) {
-                                consumers.add(st -> {
-                                    String slug = projectBreakdown.getSlug();
-                                    st.setString(1, slug);
-                                    st.setLong(2, date);
-                                    st.setDouble(3, projectBreakdown.points());
-                                    st.setDouble(4, Objects.hash(slug, date, projectBreakdown.points()));
-                                });
+                            if(config.getTrackThings().get()) {
+                                List<PostgresConsumer> consumers = new ArrayList<>();
+                                for (ProjectBreakdownData projectBreakdown : projectsBreakdownData.projectsBreakdown()) {
+                                    consumers.add(st -> {
+                                        String slug = projectBreakdown.getSlug();
+                                        st.setString(1, slug);
+                                        st.setLong(2, date);
+                                        st.setDouble(3, projectBreakdown.points());
+                                        st.setDouble(4, Objects.hash(slug, date, projectBreakdown.points()));
+                                    });
+                                }
                             }
                             handler.executeBatchUpdate("INSERT INTO curseforge.project_breakdown (slug, date, points, hash) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", consumers);
                         } catch (JsonParseException | WebResultException | IllegalStateException e) {
@@ -88,7 +90,7 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
                 }
             }
             LOGGER.info("Inserting {} Transactions", tConsumers.size());
-            handler.executeBatchUpdate("INSERT INTO curseforge.transaction (id, point_change, type) VALUES (?, ?, ?) ON CONFLICT DO NOTHING;", tConsumers);
+            handler.executeBatchUpdate("INSERT INTO curseforge.transaction (id, point_change, type, date) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", tConsumers);
             LOGGER.info("Inserted {} Transactions", tConsumers.size());
         } catch (SQLException e) {
             throw new RuntimeException(e);

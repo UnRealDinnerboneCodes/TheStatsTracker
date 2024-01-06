@@ -59,12 +59,19 @@ public class Tracker
         private final ConfigValue<Boolean> enableStore;
 
         private final ConfigValue<Boolean> discordEnabled;
+
+        private final ConfigValue<Boolean> trackThings;
         public Config(ConfigCreator creator) {
             this.time = creator.createInteger("time", 12);
             this.enableStore = creator.createBoolean("enableStore", false);
             this.discordEnabled = creator.createBoolean("discordEnabled", true);
+            this.trackThings = creator.createBoolean("trackThings", true);
         }
 
+
+        public ConfigValue<Boolean> getTrackThings() {
+            return trackThings;
+        }
 
         public ConfigValue<Boolean> getDiscordEnabled() {
             return discordEnabled;
