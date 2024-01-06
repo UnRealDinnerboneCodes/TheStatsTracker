@@ -1,6 +1,7 @@
 package com.unrealdinnerbone.marketplace.curseforge.trackers;
 
 import com.unrealdinnerbone.curseauthorsapi.CurseAuthorsAPI;
+import com.unrealdinnerbone.curseauthorsapi.api.OrderData;
 import com.unrealdinnerbone.curseauthorsapi.api.ProjectBreakdownData;
 import com.unrealdinnerbone.curseauthorsapi.api.ProjectsBreakdownData;
 import com.unrealdinnerbone.curseauthorsapi.api.TransactionData;
@@ -35,6 +36,7 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
     @Override
     public void run(Tracker.Config config, PostgressHandler handler, List<TransactionData> transactionData) {
         List<PostgresConsumer> tConsumers = new ArrayList<>();
+        List<PostgresConsumer> orders = new ArrayList<>();
         try {
             ResultSet set = handler.getSet("SELECT id from curseforge.transaction");
             List<Long> ids = new ArrayList<>();
@@ -86,12 +88,24 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
                         st.setInt(3, transactionDatum.type().getId());
                         st.setLong(4, date);
                     });
-
+                }
+                if(transactionDatum.order() != null) {
+                    OrderData order = transactionDatum.order();
+                    orders.add(preparedStatement -> {
+                        preparedStatement.setLong(1, order.id());
+                        preparedStatement.setInt(2, order.quantity());
+                        preparedStatement.setString(3, order.item());
+                        preparedStatement.setInt(4, transactionDatum.type().getId());
+                    });
                 }
             }
             LOGGER.info("Inserting {} Transactions", tConsumers.size());
             handler.executeBatchUpdate("INSERT INTO curseforge.transaction (id, point_change, type, date) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", tConsumers);
             LOGGER.info("Inserted {} Transactions", tConsumers.size());
+
+            LOGGER.info("Inserting {} Orders", orders.size());
+            handler.executeBatchUpdate("INSERT INTO curseforge.order (id, quantity, item, type) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", orders);
+            LOGGER.info("Inserted {} Orders", orders.size());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
