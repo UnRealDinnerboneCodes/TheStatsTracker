@@ -43,6 +43,7 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
             }
             for (TransactionData transactionDatum : transactionData) {
                 long date = transactionDatum.getDateCreated().getEpochSecond();
+                LOGGER.info("Transaction for {}: {} {}", date, transactionDatum.id(), transactionDatum.pointChange());
                 if(!ids.contains(transactionDatum.id())) {
                     if(transactionDatum.type() == TransactionData.Type.REWARD) {
                         try {
@@ -84,7 +85,9 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
 
                 }
             }
+            LOGGER.info("Inserting {} Transactions", tConsumers.size());
             handler.executeBatchUpdate("INSERT INTO curseforge.transaction (id, point_change, type) VALUES (?, ?, ?) ON CONFLICT DO NOTHING;", tConsumers);
+            LOGGER.info("Inserted {} Transactions", tConsumers.size());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
