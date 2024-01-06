@@ -48,22 +48,22 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
                 if(!ids.contains(transactionDatum.id())) {
                     if(transactionDatum.type() == TransactionData.Type.REWARD) {
                         try {
-                            ProjectsBreakdownData projectsBreakdownData = CurseAuthorsAPI.getBreakdown(transactionDatum.id()).getNow();
-                            EmbedObject.EmbedObjectBuilder builder = EmbedObject.builder();
-                            double totalPoints = 0;
-                            List<ProjectBreakdownData> projectBreakdownData = new ArrayList<>(projectsBreakdownData.projectsBreakdown());
-                            projectBreakdownData.sort((o1, o2) -> Double.compare(o2.points(), o1.points()));
-                            for (ProjectBreakdownData projectBreakdown : projectBreakdownData) {
-                                builder = builder.field(projectBreakdown.projectName(), projectBreakdown.points() + " (" + CURR_FORMAT.format(projectBreakdown.points() * 0.05) + ")", false);
-                                totalPoints += projectBreakdown.points();
-                            }
-                            if(config.getDiscordEnabled().get()) {
-                                DiscordWebhook.builder()
-                                        .addEmbed(builder.title("Total Points " + totalPoints + " (" + CURR_FORMAT.format(totalPoints * 0.05) + ")").build())
-                                        .setUsername("Curse Points Bot")
-                                        .post(DISCORD_WEBHOOK);
-                            }
                             if(config.getTrackThings().get()) {
+                                ProjectsBreakdownData projectsBreakdownData = CurseAuthorsAPI.getBreakdown(transactionDatum.id()).getNow();
+                                EmbedObject.EmbedObjectBuilder builder = EmbedObject.builder();
+                                double totalPoints = 0;
+                                List<ProjectBreakdownData> projectBreakdownData = new ArrayList<>(projectsBreakdownData.projectsBreakdown());
+                                projectBreakdownData.sort((o1, o2) -> Double.compare(o2.points(), o1.points()));
+                                for (ProjectBreakdownData projectBreakdown : projectBreakdownData) {
+                                    builder = builder.field(projectBreakdown.projectName(), projectBreakdown.points() + " (" + CURR_FORMAT.format(projectBreakdown.points() * 0.05) + ")", false);
+                                    totalPoints += projectBreakdown.points();
+                                }
+                                if(config.getDiscordEnabled().get()) {
+                                    DiscordWebhook.builder()
+                                            .addEmbed(builder.title("Total Points " + totalPoints + " (" + CURR_FORMAT.format(totalPoints * 0.05) + ")").build())
+                                            .setUsername("Curse Points Bot")
+                                            .post(DISCORD_WEBHOOK);
+                                }
                                 List<PostgresConsumer> consumers = new ArrayList<>();
                                 for (ProjectBreakdownData projectBreakdown : projectsBreakdownData.projectsBreakdown()) {
                                     consumers.add(st -> {
