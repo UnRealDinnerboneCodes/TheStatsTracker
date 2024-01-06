@@ -46,8 +46,9 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
             }
             for (TransactionData transactionDatum : transactionData) {
                 long date = transactionDatum.getDateCreated().getEpochSecond();
-                LOGGER.info("Transaction for {}: {} {}", transactionDatum.getDateCreated(), transactionDatum.id(), transactionDatum.pointChange());
                 if(!ids.contains(transactionDatum.id())) {
+                    LOGGER.info("Transaction for {}: {} {}", transactionDatum.getDateCreated(), transactionDatum.id(), transactionDatum.pointChange());
+
                     if(transactionDatum.type() == TransactionData.Type.REWARD) {
                         try {
                             if(config.getTrackThings().get()) {
@@ -96,6 +97,7 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
                         preparedStatement.setInt(2, order.quantity());
                         preparedStatement.setString(3, order.item());
                         preparedStatement.setInt(4, transactionDatum.type().getId());
+                        preparedStatement.setLong(5, date);
                     });
                 }
             }
@@ -104,7 +106,7 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
             LOGGER.info("Inserted {} Transactions", tConsumers.size());
 
             LOGGER.info("Inserting {} Orders", orders.size());
-            handler.executeBatchUpdate("INSERT INTO curseforge.order (id, quantity, item, type) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", orders);
+            handler.executeBatchUpdate("INSERT INTO curseforge.order (id, quantity, item, type, date) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING;", orders);
             LOGGER.info("Inserted {} Orders", orders.size());
         } catch (SQLException e) {
             throw new RuntimeException(e);
