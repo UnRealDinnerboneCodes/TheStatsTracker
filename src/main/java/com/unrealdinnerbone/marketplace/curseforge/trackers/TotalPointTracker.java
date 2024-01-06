@@ -2,6 +2,7 @@ package com.unrealdinnerbone.marketplace.curseforge.trackers;
 
 import com.unrealdinnerbone.curseauthorsapi.CurseAuthorsAPI;
 import com.unrealdinnerbone.curseauthorsapi.api.UserPointData;
+import com.unrealdinnerbone.marketplace.Tracker;
 import com.unrealdinnerbone.marketplace.curseforge.api.ICurseTracker;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.LogHelper;
@@ -17,7 +18,7 @@ public class TotalPointTracker implements ICurseTracker<UserPointData> {
 
 
     @Override
-    public void run(PostgressHandler handler, UserPointData userPointData) {
+    public void run(Tracker.Config config, PostgressHandler handler, UserPointData userPointData) {
         LOGGER.info("Current User Points: {}", userPointData.userPoints());
         handler.executeUpdate("INSERT INTO curseforge.user_points (points, date, hash) VALUES (?, ?, ?) ON CONFLICT DO NOTHING;", statement -> {
             long now = Instant.now().getEpochSecond();

@@ -2,6 +2,7 @@ package com.unrealdinnerbone.marketplace.curseforge.trackers;
 
 import com.unrealdinnerbone.curseauthorsapi.CurseAuthorsAPI;
 import com.unrealdinnerbone.curseauthorsapi.api.LastMonthRevenueData;
+import com.unrealdinnerbone.marketplace.Tracker;
 import com.unrealdinnerbone.marketplace.curseforge.api.ICurseTracker;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.apiutils.result.IResult;
@@ -17,7 +18,7 @@ public class LastMonthRevenueTracker implements ICurseTracker<List<LastMonthReve
 
 
     @Override
-    public void run(PostgressHandler handler, List<LastMonthRevenueData> projectDownloadData) {
+    public void run(Tracker.Config config, PostgressHandler handler, List<LastMonthRevenueData> projectDownloadData) {
         for(LastMonthRevenueData revenueData : projectDownloadData) {
             LOGGER.info("Revenue for {}: {}", revenueData.getRevenueDate(), revenueData.revenueDate());
             handler.executeUpdate("INSERT INTO curseforge.monthly_revenue (date, amount) VALUES (?, ?) ON CONFLICT DO NOTHING;", statement -> {

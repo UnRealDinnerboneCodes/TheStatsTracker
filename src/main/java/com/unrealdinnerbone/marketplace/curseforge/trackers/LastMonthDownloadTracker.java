@@ -2,6 +2,7 @@ package com.unrealdinnerbone.marketplace.curseforge.trackers;
 
 import com.unrealdinnerbone.curseauthorsapi.CurseAuthorsAPI;
 import com.unrealdinnerbone.curseauthorsapi.api.LastMonthDownloadsData;
+import com.unrealdinnerbone.marketplace.Tracker;
 import com.unrealdinnerbone.marketplace.curseforge.api.ICurseTracker;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.apiutils.result.IResult;
@@ -17,7 +18,7 @@ public class LastMonthDownloadTracker implements ICurseTracker<List<LastMonthDow
 
 
     @Override
-    public void run(PostgressHandler handler, List<LastMonthDownloadsData> lastMonthDownloadsData) {
+    public void run(Tracker.Config config, PostgressHandler handler, List<LastMonthDownloadsData> lastMonthDownloadsData) {
         for(LastMonthDownloadsData downloadsData : lastMonthDownloadsData) {
             LOGGER.info("Downloads for {}: {}", downloadsData.getDownloadDate(), downloadsData.totalDownloads());
             handler.executeUpdate("INSERT INTO curseforge.downloads (date, downloads) VALUES (?, ?) ON CONFLICT DO NOTHING;", statement -> {

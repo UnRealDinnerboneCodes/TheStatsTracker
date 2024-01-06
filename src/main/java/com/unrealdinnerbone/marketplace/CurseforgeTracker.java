@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 
 import java.util.List;
 
-public class CurseforgeTracker implements IStatsTracker {
+public record CurseforgeTracker(Tracker.Config config) implements IStatsTracker {
 
     private static final Logger LOGGER = LogHelper.getLogger();
 
@@ -38,6 +38,6 @@ public class CurseforgeTracker implements IStatsTracker {
     }
 
     public <T> void run(PostgressHandler postgressHandler, ICurseTracker<T> tracker) throws JsonParseException, WebResultException {
-        tracker.run(postgressHandler, tracker.get().getNow());
+        tracker.run(config, postgressHandler, tracker.get().getNow());
     }
 }

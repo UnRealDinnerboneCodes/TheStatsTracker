@@ -33,7 +33,7 @@ public class Tracker
         LOGGER.info("Host: {} Port: {} Database: {} Username: {} Password: {}", postgresConfig.getHost().get(), postgresConfig.getPort().get(), postgresConfig.getDb().get(), postgresConfig.getUsername().get(), postgresConfig.getPassword().get());
         LOGGER.info("Running tracker every {} hours", config.getTime().get());
         PostgressHandler postgressHandler = new PostgressHandler(postgresConfig);
-        register(postgressHandler, TimeUnit.HOURS, config.getTime().get(), new CurseforgeTracker());
+        register(postgressHandler, TimeUnit.HOURS, config.getTime().get(), new CurseforgeTracker(config));
         if(config.getEnableStore().get()) {
             register(postgressHandler, TimeUnit.HOURS, config.getTime().get(), new CurseforgeStoreTracker());
         }
@@ -57,9 +57,17 @@ public class Tracker
 
         private final ConfigValue<Integer> time;
         private final ConfigValue<Boolean> enableStore;
+
+        private final ConfigValue<Boolean> discordEnabled;
         public Config(ConfigCreator creator) {
             this.time = creator.createInteger("time", 12);
             this.enableStore = creator.createBoolean("enableStore", false);
+            this.discordEnabled = creator.createBoolean("discordEnabled", true);
+        }
+
+
+        public ConfigValue<Boolean> getDiscordEnabled() {
+            return discordEnabled;
         }
 
         public ConfigValue<Boolean> getEnableStore() {

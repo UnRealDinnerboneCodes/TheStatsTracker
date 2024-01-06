@@ -2,6 +2,7 @@ package com.unrealdinnerbone.marketplace.curseforge.trackers;
 
 import com.unrealdinnerbone.curseauthorsapi.CurseAuthorsAPI;
 import com.unrealdinnerbone.curseauthorsapi.api.ProjectRevenueData;
+import com.unrealdinnerbone.marketplace.Tracker;
 import com.unrealdinnerbone.marketplace.curseforge.api.ICurseTracker;
 import com.unrealdinnerbone.postgresslib.PostgresConsumer;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
@@ -21,7 +22,7 @@ public class ProjectRevenueTracker implements ICurseTracker<List<ProjectRevenueD
 
 
     @Override
-    public void run(PostgressHandler handler, List<ProjectRevenueData> projectRevenueData) {
+    public void run(Tracker.Config config, PostgressHandler handler, List<ProjectRevenueData> projectRevenueData) {
         for(ProjectRevenueData revenueData : projectRevenueData) {
             List<PostgresConsumer> postgresConsumers = new ArrayList<>();
             Instant month = revenueData.getRevenueMonth();

@@ -3,6 +3,7 @@ package com.unrealdinnerbone.marketplace.curseforge.trackers;
 import com.unrealdinnerbone.curseauthorsapi.CurseAuthorsAPI;
 import com.unrealdinnerbone.curseauthorsapi.api.RevenueEstimationData;
 import com.unrealdinnerbone.curseauthorsapi.api.base.QueryResult;
+import com.unrealdinnerbone.marketplace.Tracker;
 import com.unrealdinnerbone.marketplace.curseforge.api.ICurseTracker;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.apiutils.result.IResult;
@@ -17,7 +18,7 @@ public class EstimatedRevenueTracker implements ICurseTracker<QueryResult<Revenu
 
 
     @Override
-    public void run(PostgressHandler handler, QueryResult<RevenueEstimationData> estimatedRevenue) {
+    public void run(Tracker.Config config, PostgressHandler handler, QueryResult<RevenueEstimationData> estimatedRevenue) {
         RevenueEstimationData revenueEstimationData = estimatedRevenue.data();
         LOGGER.info("Estimated Revenue: Y: {} M: {}", revenueEstimationData.estimatedYearlyRevenue(), revenueEstimationData.estimatedLastMonthRevenue());
 

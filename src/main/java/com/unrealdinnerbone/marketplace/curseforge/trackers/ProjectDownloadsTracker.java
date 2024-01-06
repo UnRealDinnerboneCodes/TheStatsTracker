@@ -2,6 +2,7 @@ package com.unrealdinnerbone.marketplace.curseforge.trackers;
 
 import com.unrealdinnerbone.curseauthorsapi.CurseAuthorsAPI;
 import com.unrealdinnerbone.curseauthorsapi.api.ProjectDownloadData;
+import com.unrealdinnerbone.marketplace.Tracker;
 import com.unrealdinnerbone.marketplace.curseforge.api.ICurseTracker;
 import com.unrealdinnerbone.postgresslib.PostgresConsumer;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
@@ -20,7 +21,7 @@ public class ProjectDownloadsTracker implements ICurseTracker<List<ProjectDownlo
 
 
     @Override
-    public void run(PostgressHandler handler, List<ProjectDownloadData> projectDownloadData) {
+    public void run(Tracker.Config config, PostgressHandler handler, List<ProjectDownloadData> projectDownloadData) {
         for(ProjectDownloadData downloadData : projectDownloadData) {
             List<PostgresConsumer> postgresConsumers = new ArrayList<>();
             LOGGER.info("Downloads for {}", downloadData.getDownloadDate());

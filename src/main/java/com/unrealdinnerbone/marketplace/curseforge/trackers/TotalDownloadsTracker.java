@@ -3,6 +3,7 @@ package com.unrealdinnerbone.marketplace.curseforge.trackers;
 import com.unrealdinnerbone.curseauthorsapi.CurseAuthorsAPI;
 import com.unrealdinnerbone.curseauthorsapi.api.DownloadsTotalData;
 import com.unrealdinnerbone.curseauthorsapi.api.base.QueryResult;
+import com.unrealdinnerbone.marketplace.Tracker;
 import com.unrealdinnerbone.marketplace.curseforge.api.ICurseTracker;
 import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.apiutils.result.IResult;
@@ -15,7 +16,7 @@ public class TotalDownloadsTracker implements ICurseTracker<QueryResult<Download
 
 
     @Override
-    public void run(PostgressHandler handler, QueryResult<DownloadsTotalData> downloadsTotalData) {
+    public void run(Tracker.Config config, PostgressHandler handler, QueryResult<DownloadsTotalData> downloadsTotalData) {
         LOGGER.info("Total Downloads at {}: {}", downloadsTotalData.data().total(), downloadsTotalData.getRetrievedAt());
     }
 
