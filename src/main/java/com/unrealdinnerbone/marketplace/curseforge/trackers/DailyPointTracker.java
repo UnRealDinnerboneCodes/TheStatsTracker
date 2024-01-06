@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -43,7 +44,7 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
             }
             for (TransactionData transactionDatum : transactionData) {
                 long date = transactionDatum.getDateCreated().getEpochSecond();
-                LOGGER.info("Transaction for {}: {} {}", date, transactionDatum.id(), transactionDatum.pointChange());
+                LOGGER.info("Transaction for {}: {} {}", transactionDatum.getDateCreated(), transactionDatum.id(), transactionDatum.pointChange());
                 if(!ids.contains(transactionDatum.id())) {
                     if(transactionDatum.type() == TransactionData.Type.REWARD) {
                         try {
