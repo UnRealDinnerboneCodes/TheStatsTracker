@@ -82,6 +82,7 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
                         st.setLong(1, transactionDatum.id());
                         st.setDouble(2, transactionDatum.pointChange());
                         st.setInt(3, transactionDatum.type().getId());
+                        st.setLong(4, date);
                     });
 
                 }
