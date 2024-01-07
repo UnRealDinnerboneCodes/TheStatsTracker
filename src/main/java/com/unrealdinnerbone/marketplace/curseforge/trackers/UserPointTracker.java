@@ -24,7 +24,6 @@ public class UserPointTracker implements ICurseTracker<UserPointData> {
             long now = Instant.now().getEpochSecond();
             statement.setLong(1, userPointData.userPoints());
             statement.setLong(2, now);
-            statement.setLong(3, Objects.hash(userPointData.userPoints(), now));
         });
     }
 
