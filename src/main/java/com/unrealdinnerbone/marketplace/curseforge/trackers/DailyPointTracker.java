@@ -38,6 +38,8 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
     public void run(Tracker.Config config, PostgressHandler handler, List<TransactionData> transactionData) {
         List<PostgresConsumer> tConsumers = new ArrayList<>();
         List<PostgresConsumer> orders = new ArrayList<>();
+        List<PostgresConsumer> projectCo = new ArrayList<>();
+
         try {
             ResultSet set = handler.getSet("SELECT id from curseforge.transaction");
             List<Long> ids = new ArrayList<>();
@@ -68,15 +70,13 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
                                             .setUsername("Curse Points Bot")
                                             .post(DISCORD_WEBHOOK);
                                 }
-                                List<PostgresConsumer> consumers = new ArrayList<>();
                                 for (ProjectBreakdownData projectBreakdown : projectsBreakdownData.projectsBreakdown()) {
-                                    consumers.add(st -> {
+                                    projectCo.add(st -> {
                                         st.setString(1, projectBreakdown.projectName());
                                         st.setTimestamp(2, timestamp);
                                         st.setDouble(3, projectBreakdown.points());
                                     });
                                 }
-                                handler.executeBatchUpdate("INSERT INTO curseforge.project_points (slug, time, points) VALUES (?, ?, ?) ON CONFLICT DO NOTHING;", consumers);
                             }
                         } catch (JsonParseException | WebResultException | IllegalStateException e) {
                             LOGGER.error("Error while getting project breakdown", e);
@@ -108,6 +108,11 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
             LOGGER.info("Inserting {} Orders", orders.size());
             handler.executeBatchUpdate("INSERT INTO curseforge.order (id, quantity, item, type, time) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING;", orders);
             LOGGER.info("Inserted {} Orders", orders.size());
+
+            LOGGER.info("Inserting {} Project Points", projectCo.size());
+            handler.executeBatchUpdate("INSERT INTO curseforge.project_points (slug, time, points) VALUES (?, ?, ?) ON CONFLICT DO NOTHING;", projectCo);
+            LOGGER.info("Inserted {} Project Points", projectCo.size());
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
