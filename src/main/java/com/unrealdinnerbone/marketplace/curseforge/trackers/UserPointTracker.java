@@ -9,6 +9,7 @@ import com.unrealdinnerbone.unreallib.LogHelper;
 import com.unrealdinnerbone.unreallib.apiutils.result.IResult;
 import org.slf4j.Logger;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -21,9 +22,8 @@ public class UserPointTracker implements ICurseTracker<UserPointData> {
     public void run(Tracker.Config config, PostgressHandler handler, UserPointData userPointData) {
         LOGGER.info("Current User Points: {}", userPointData.userPoints());
         handler.executeUpdate("INSERT INTO curseforge.user_points (points, time) VALUES (?, ?) ON CONFLICT DO NOTHING;", statement -> {
-            long now = Instant.now().getEpochSecond();
             statement.setLong(1, userPointData.userPoints());
-            statement.setLong(2, now);
+            statement.setTimestamp(2, Timestamp.from(Instant.now()));
         });
     }
 
