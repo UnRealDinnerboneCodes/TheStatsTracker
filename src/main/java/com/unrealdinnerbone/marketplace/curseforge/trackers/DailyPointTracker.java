@@ -102,11 +102,11 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
 
             }
             LOGGER.info("Inserting {} Transactions", tConsumers.size());
-            handler.executeBatchUpdate("INSERT INTO curseforge.transaction (id, point_change, type, date) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", tConsumers);
+            handler.executeBatchUpdate("INSERT INTO curseforge.transaction (id, point_change, type, time) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", tConsumers);
             LOGGER.info("Inserted {} Transactions", tConsumers.size());
 
             LOGGER.info("Inserting {} Orders", orders.size());
-            handler.executeBatchUpdate("INSERT INTO curseforge.order (id, quantity, item, type, date) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING;", orders);
+            handler.executeBatchUpdate("INSERT INTO curseforge.order (id, quantity, item, type, time) VALUES (?, ?, ?, ?, ?) ON CONFLICT DO NOTHING;", orders);
             LOGGER.info("Inserted {} Orders", orders.size());
         } catch (SQLException e) {
             throw new RuntimeException(e);

@@ -20,7 +20,7 @@ public class UserPointTracker implements ICurseTracker<UserPointData> {
     @Override
     public void run(Tracker.Config config, PostgressHandler handler, UserPointData userPointData) {
         LOGGER.info("Current User Points: {}", userPointData.userPoints());
-        handler.executeUpdate("INSERT INTO curseforge.user_points (points, date) VALUES (?, ?, ?) ON CONFLICT DO NOTHING;", statement -> {
+        handler.executeUpdate("INSERT INTO curseforge.user_points (points, time) VALUES (?, ?, ?) ON CONFLICT DO NOTHING;", statement -> {
             long now = Instant.now().getEpochSecond();
             statement.setLong(1, userPointData.userPoints());
             statement.setLong(2, now);
