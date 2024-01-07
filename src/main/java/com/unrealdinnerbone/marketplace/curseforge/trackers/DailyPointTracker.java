@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
 
     private static final String DISCORD_WEBHOOK = System.getenv("DISCORD_WEBHOOK");
 
-    private static final DecimalFormat CURR_FORMAT = new DecimalFormat("$#,###.00");
+    private static final DecimalFormat CURR_FORMAT = new DecimalFormat("#,###.00");
 
     @Override
     public void run(Tracker.Config config, PostgressHandler handler, List<TransactionData> transactionData) {
@@ -45,7 +46,7 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
                 ids.add(id);
             }
             for (TransactionData transactionDatum : transactionData) {
-                long date = transactionDatum.getDateCreated().getEpochSecond();
+                Timestamp timestamp = Timestamp.from(transactionDatum.getDateCreated());
                 if(!ids.contains(transactionDatum.id())) {
                     LOGGER.info("Transaction for {}: {} {}", transactionDatum.getDateCreated(), transactionDatum.id(), transactionDatum.pointChange());
 
@@ -58,26 +59,24 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
                                 List<ProjectBreakdownData> projectBreakdownData = new ArrayList<>(projectsBreakdownData.projectsBreakdown());
                                 projectBreakdownData.sort((o1, o2) -> Double.compare(o2.points(), o1.points()));
                                 for (ProjectBreakdownData projectBreakdown : projectBreakdownData) {
-                                    builder = builder.field(projectBreakdown.projectName(), projectBreakdown.points() + " (" + CURR_FORMAT.format(projectBreakdown.points() * 0.05) + ")", false);
+                                    builder = builder.field(projectBreakdown.projectName(), projectBreakdown.points() + getCurrencyFormat(projectBreakdown.points()), false);
                                     totalPoints += projectBreakdown.points();
                                 }
                                 if(config.getDiscordEnabled().get()) {
                                     DiscordWebhook.builder()
-                                            .addEmbed(builder.title("Total Points " + totalPoints + " (" + CURR_FORMAT.format(totalPoints * 0.05) + ")").build())
+                                            .addEmbed(builder.title("Total Points " + totalPoints + getCurrencyFormat(totalPoints)).build())
                                             .setUsername("Curse Points Bot")
                                             .post(DISCORD_WEBHOOK);
                                 }
                                 List<PostgresConsumer> consumers = new ArrayList<>();
                                 for (ProjectBreakdownData projectBreakdown : projectsBreakdownData.projectsBreakdown()) {
                                     consumers.add(st -> {
-                                        String slug = projectBreakdown.getSlug();
-                                        st.setString(1, slug);
-                                        st.setLong(2, date);
+                                        st.setString(1, projectBreakdown.projectName());
+                                        st.setTimestamp(2, timestamp);
                                         st.setDouble(3, projectBreakdown.points());
-                                        st.setDouble(4, Objects.hash(slug, date, projectBreakdown.points()));
                                     });
                                 }
-                                handler.executeBatchUpdate("INSERT INTO curseforge.project_breakdown (slug, date, points, hash) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", consumers);
+                                handler.executeBatchUpdate("INSERT INTO curseforge.project_points (slug, time, points) VALUES (?, ?, ?) ON CONFLICT DO NOTHING;", consumers);
                             }
                         } catch (JsonParseException | WebResultException | IllegalStateException e) {
                             LOGGER.error("Error while getting project breakdown", e);
@@ -87,19 +86,20 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
                         st.setLong(1, transactionDatum.id());
                         st.setDouble(2, transactionDatum.pointChange());
                         st.setInt(3, transactionDatum.type().getId());
-                        st.setLong(4, date);
+                        st.setTimestamp(4, timestamp);
                     });
+                    if(transactionDatum.order() != null) {
+                        OrderData order = transactionDatum.order();
+                        orders.add(preparedStatement -> {
+                            preparedStatement.setLong(1, order.id());
+                            preparedStatement.setInt(2, order.quantity());
+                            preparedStatement.setString(3, order.item());
+                            preparedStatement.setInt(4, transactionDatum.type().getId());
+                            preparedStatement.setTimestamp(5, timestamp);
+                        });
+                    }
                 }
-                if(transactionDatum.order() != null) {
-                    OrderData order = transactionDatum.order();
-                    orders.add(preparedStatement -> {
-                        preparedStatement.setLong(1, order.id());
-                        preparedStatement.setInt(2, order.quantity());
-                        preparedStatement.setString(3, order.item());
-                        preparedStatement.setInt(4, transactionDatum.type().getId());
-                        preparedStatement.setLong(5, date);
-                    });
-                }
+
             }
             LOGGER.info("Inserting {} Transactions", tConsumers.size());
             handler.executeBatchUpdate("INSERT INTO curseforge.transaction (id, point_change, type, date) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING;", tConsumers);
@@ -113,6 +113,12 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
         }
 
 
+    }
+
+
+    //https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/usd/eur.json
+    public static String getCurrencyFormat(double points) {
+        return " ($" + CURR_FORMAT.format(points * 0.05) + ")";
     }
 
     @Override

@@ -15,13 +15,13 @@ public record CurseforgeTracker(Tracker.Config config) implements IStatsTracker 
     private static final Logger LOGGER = LogHelper.getLogger();
 
     private static final List<ICurseTracker<?>> trackers = List.of(
-            new EstimatedRevenueTracker(),
-            new LastMonthDownloadTracker(),
-            new LastMonthRevenueTracker(),
+//            new EstimatedRevenueTracker(),
+//            new LastMonthDownloadTracker(),
+//            new LastMonthRevenueTracker(),
             new ProjectDownloadsTracker(),
-            new ProjectRevenueTracker(),
-            new TotalDownloadsTracker(),
-            new TotalPointTracker(),
+//            new ProjectRevenueTracker(),
+//            new TotalDownloadsTracker(),
+            new UserPointTracker(),
             new DailyPointTracker()
             );
 
