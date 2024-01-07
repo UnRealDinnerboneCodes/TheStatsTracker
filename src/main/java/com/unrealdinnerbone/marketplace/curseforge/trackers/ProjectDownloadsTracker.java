@@ -33,9 +33,10 @@ public class ProjectDownloadsTracker implements ICurseTracker<List<ProjectDownlo
                     statement.setString(1, name);
                     statement.setLong(2, downloads);
                     statement.setTimestamp(3, Timestamp.from(downloadData.getDownloadDate()));
+                    statement.setLong(4, downloads);
                 });
             }
-            handler.executeBatchUpdate("INSERT INTO curseforge.project_downloads (project, downloads, time) VALUES (?, ?, ?) ON CONFLICT DO UPDATE;", postgresConsumers);
+            handler.executeBatchUpdate("INSERT INTO curseforge.project_downloads (project, downloads, time) VALUES (?, ?, ?) ON CONFLICT DO UPDATE set downloads ?;", postgresConsumers);
         }
     }
 
