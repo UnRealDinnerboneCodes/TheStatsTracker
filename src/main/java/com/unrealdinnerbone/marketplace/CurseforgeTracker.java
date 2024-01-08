@@ -18,6 +18,7 @@ public record CurseforgeTracker(Tracker.Config config) implements IStatsTracker 
 //            new EstimatedRevenueTracker(),
 //            new LastMonthDownloadTracker(),
 //            new LastMonthRevenueTracker(),
+            new ProjectSlugTracker(),
             new DailyPointTracker(),
             new ProjectDownloadsTracker(),
 //            new ProjectRevenueTracker(),

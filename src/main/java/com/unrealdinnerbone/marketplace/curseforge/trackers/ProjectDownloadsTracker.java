@@ -22,22 +22,7 @@ public class ProjectDownloadsTracker implements ICurseTracker<List<ProjectDownlo
 
     @Override
     public void run(Tracker.Config config, PostgressHandler handler, List<ProjectDownloadData> projectDownloadData) {
-        Map<String, String> projectToSlugMap = new HashMap<>();
-        try {
-            ResultSet set = handler.getSet("SELECT slug, name from curseforge.projects");
-            while (set.next()) {
-                String slug = set.getString("slug");
-                String name = set.getString("name").toLowerCase();
-                projectToSlugMap.put(name, slug);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        LOGGER.info("Map...");
-        projectToSlugMap.forEach((s, s2) -> LOGGER.info("{} -> {}", s, s2));
-        LOGGER.info("...Map");
-
+        Map<String, String> projectToSlugMap = getProjectToSlugMap(handler);
         for (ProjectDownloadData downloadData : projectDownloadData) {
             List<PostgresConsumer> postgresConsumers = new ArrayList<>();
             LOGGER.info("Downloads for {}", downloadData.getDownloadDate());

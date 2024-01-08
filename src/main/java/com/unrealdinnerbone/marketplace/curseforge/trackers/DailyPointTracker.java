@@ -24,6 +24,7 @@ import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
@@ -39,8 +40,8 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
         List<PostgresConsumer> tConsumers = new ArrayList<>();
         List<PostgresConsumer> orders = new ArrayList<>();
         List<PostgresConsumer> projectCo = new ArrayList<>();
-        List<PostgresConsumer> projects = new ArrayList<>();
-        List<String> doneProjects = new ArrayList<>();
+
+        Map<String, String> nameToSlug = getProjectToSlugMap(handler);
 
         try {
             ResultSet set = handler.getSet("SELECT id from curseforge.transaction");
@@ -73,20 +74,15 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
                                             .post(DISCORD_WEBHOOK);
                                 }
                                 for (ProjectBreakdownData projectBreakdown : projectsBreakdownData.projectsBreakdown()) {
-                                    if(!doneProjects.contains(projectBreakdown.getSlug())) {
-                                        doneProjects.add(projectBreakdown.getSlug());
-                                        projects.add(st -> {
-                                            st.setString(1, projectBreakdown.getSlug());
-                                            st.setString(2, projectBreakdown.projectName());
+                                    if(!nameToSlug.containsKey(projectBreakdown.projectName())) {
+                                        LOGGER.error("Could not find slug for {}", projectBreakdown.projectName());
+                                    }else {
+                                        projectCo.add(st -> {
+                                            st.setString(1, nameToSlug.get(projectBreakdown.projectName()));
+                                            st.setTimestamp(2, timestamp);
+                                            st.setDouble(3, projectBreakdown.points());
                                         });
                                     }
-
-
-                                    projectCo.add(st -> {
-                                        st.setString(1, projectBreakdown.getSlug());
-                                        st.setTimestamp(2, timestamp);
-                                        st.setDouble(3, projectBreakdown.points());
-                                    });
                                 }
                             }
                         } catch (JsonParseException | WebResultException | IllegalStateException e) {
@@ -124,9 +120,6 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
             handler.executeBatchUpdate("INSERT INTO curseforge.project_points (slug, time, points) VALUES (?, ?, ?) ON CONFLICT DO NOTHING;", projectCo);
             LOGGER.info("Inserted {} Project Points", projectCo.size());
 
-            LOGGER.info("Inserting {} Projects", projects.size());
-            handler.executeBatchUpdate("INSERT INTO curseforge.projects (slug, name) VALUES (?, ?) ON CONFLICT DO NOTHING;", projects);
-            LOGGER.info("Inserted {} Projects", projects.size());
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
