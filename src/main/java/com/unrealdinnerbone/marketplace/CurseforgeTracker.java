@@ -18,11 +18,11 @@ public record CurseforgeTracker(Tracker.Config config) implements IStatsTracker 
 //            new EstimatedRevenueTracker(),
 //            new LastMonthDownloadTracker(),
 //            new LastMonthRevenueTracker(),
+            new DailyPointTracker(),
             new ProjectDownloadsTracker(),
 //            new ProjectRevenueTracker(),
 //            new TotalDownloadsTracker(),
-            new UserPointTracker(),
-            new DailyPointTracker()
+            new UserPointTracker()
             );
 
     @Override
