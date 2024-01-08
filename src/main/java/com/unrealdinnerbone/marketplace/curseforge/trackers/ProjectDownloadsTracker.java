@@ -38,7 +38,7 @@ public class ProjectDownloadsTracker implements ICurseTracker<List<ProjectDownlo
             List<PostgresConsumer> postgresConsumers = new ArrayList<>();
             LOGGER.info("Downloads for {}", downloadData.getDownloadDate());
             for (Map.Entry<String, Integer> stringLongEntry : downloadData.modDownloads().entrySet()) {
-                String key = stringLongEntry.getKey().replace(" ", "-").replace("(", "").replace(")", "").replace("'", "")
+                String key = stringLongEntry.getKey().replace(" ", "-").replace("(", "").replace(")", "").replace("'", "");
                 if(projectToSlugMap.containsKey(key)) {
                     String slug = projectToSlugMap.get(key);
                     postgresConsumers.add(statement -> {
