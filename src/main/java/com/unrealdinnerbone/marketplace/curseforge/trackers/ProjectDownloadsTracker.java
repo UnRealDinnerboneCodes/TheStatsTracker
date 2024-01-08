@@ -24,7 +24,7 @@ public class ProjectDownloadsTracker implements ICurseTracker<List<ProjectDownlo
     public void run(Tracker.Config config, PostgressHandler handler, List<ProjectDownloadData> projectDownloadData) {
         Map<String, String> projectToSlugMap = new HashMap<>();
         try {
-            ResultSet set = handler.getSet("SELECT slug, name from curseforge.project");
+            ResultSet set = handler.getSet("SELECT slug, name from curseforge.projects");
             while (set.next()) {
                 String slug = set.getString("slug");
                 String name = set.getString("name");
