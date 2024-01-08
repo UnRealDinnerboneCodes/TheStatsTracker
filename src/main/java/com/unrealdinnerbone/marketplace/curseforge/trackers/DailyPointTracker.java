@@ -40,6 +40,7 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
         List<PostgresConsumer> orders = new ArrayList<>();
         List<PostgresConsumer> projectCo = new ArrayList<>();
         List<PostgresConsumer> projects = new ArrayList<>();
+        List<String> doneProjects = new ArrayList<>();
 
         try {
             ResultSet set = handler.getSet("SELECT id from curseforge.transaction");
@@ -72,10 +73,13 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
                                             .post(DISCORD_WEBHOOK);
                                 }
                                 for (ProjectBreakdownData projectBreakdown : projectsBreakdownData.projectsBreakdown()) {
-                                    projects.add(st -> {
-                                        st.setString(1, projectBreakdown.getSlug());
-                                        st.setString(2, projectBreakdown.projectName());
-                                    });
+                                    if(!doneProjects.contains(projectBreakdown.getSlug())) {
+                                        doneProjects.add(projectBreakdown.getSlug());
+                                        projects.add(st -> {
+                                            st.setString(1, projectBreakdown.getSlug());
+                                            st.setString(2, projectBreakdown.projectName());
+                                        });
+                                    }
 
 
                                     projectCo.add(st -> {
