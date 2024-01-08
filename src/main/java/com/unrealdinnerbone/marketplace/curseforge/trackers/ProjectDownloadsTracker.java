@@ -10,11 +10,10 @@ import com.unrealdinnerbone.unreallib.apiutils.result.IResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class ProjectDownloadsTracker implements ICurseTracker<List<ProjectDownloadData>> {
 
@@ -23,17 +22,32 @@ public class ProjectDownloadsTracker implements ICurseTracker<List<ProjectDownlo
 
     @Override
     public void run(Tracker.Config config, PostgressHandler handler, List<ProjectDownloadData> projectDownloadData) {
-        for(ProjectDownloadData downloadData : projectDownloadData) {
+        Map<String, String> projectToSlugMap = new HashMap<>();
+        try {
+            ResultSet set = handler.getSet("SELECT slug, name from curseforge.project");
+            while (set.next()) {
+                String slug = set.getString("slug");
+                String name = set.getString("name");
+                projectToSlugMap.put(name, slug);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (ProjectDownloadData downloadData : projectDownloadData) {
             List<PostgresConsumer> postgresConsumers = new ArrayList<>();
             LOGGER.info("Downloads for {}", downloadData.getDownloadDate());
-            for(Map.Entry<String, Integer> stringLongEntry : downloadData.modDownloads().entrySet()) {
-                String name = stringLongEntry.getKey();
-                long downloads = stringLongEntry.getValue();
-                postgresConsumers.add(statement -> {
-                    statement.setString(1, name);
-                    statement.setLong(2, downloads);
-                    statement.setTimestamp(3, Timestamp.from(downloadData.getDownloadDate()));
-                });
+            for (Map.Entry<String, Integer> stringLongEntry : downloadData.modDownloads().entrySet()) {
+                if(projectToSlugMap.containsKey(stringLongEntry.getKey())) {
+                    String slug = projectToSlugMap.get(stringLongEntry.getKey());
+                    postgresConsumers.add(statement -> {
+                        statement.setString(1, slug);
+                        statement.setLong(2, stringLongEntry.getValue());
+                        statement.setTimestamp(3, Timestamp.from(downloadData.getDownloadDate()));
+                    });
+                }else {
+                    LOGGER.warn("Could not find slug for {}", stringLongEntry.getKey());
+                }
             }
             handler.executeBatchUpdate("INSERT INTO curseforge.project_downloads (project, downloads, time) VALUES (?, ?, ?) ON CONFLICT (project, time) do update set downloads = EXCLUDED.downloads;", postgresConsumers);
         }

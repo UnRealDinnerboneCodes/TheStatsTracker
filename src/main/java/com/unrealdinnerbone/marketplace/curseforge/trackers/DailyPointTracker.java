@@ -39,6 +39,7 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
         List<PostgresConsumer> tConsumers = new ArrayList<>();
         List<PostgresConsumer> orders = new ArrayList<>();
         List<PostgresConsumer> projectCo = new ArrayList<>();
+        List<PostgresConsumer> projects = new ArrayList<>();
 
         try {
             ResultSet set = handler.getSet("SELECT id from curseforge.transaction");
@@ -71,8 +72,14 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
                                             .post(DISCORD_WEBHOOK);
                                 }
                                 for (ProjectBreakdownData projectBreakdown : projectsBreakdownData.projectsBreakdown()) {
+                                    projects.add(st -> {
+                                        st.setString(1, projectBreakdown.getSlug());
+                                        st.setString(2, projectBreakdown.projectName());
+                                    });
+
+
                                     projectCo.add(st -> {
-                                        st.setString(1, projectBreakdown.projectName());
+                                        st.setString(1, projectBreakdown.getSlug());
                                         st.setTimestamp(2, timestamp);
                                         st.setDouble(3, projectBreakdown.points());
                                     });
@@ -112,6 +119,10 @@ public class DailyPointTracker implements ICurseTracker<List<TransactionData>> {
             LOGGER.info("Inserting {} Project Points", projectCo.size());
             handler.executeBatchUpdate("INSERT INTO curseforge.project_points (slug, time, points) VALUES (?, ?, ?) ON CONFLICT DO NOTHING;", projectCo);
             LOGGER.info("Inserted {} Project Points", projectCo.size());
+
+            LOGGER.info("Inserting {} Projects", projects.size());
+            handler.executeBatchUpdate("INSERT INTO curseforge.projects (slug, name) VALUES (?, ?) ON CONFLICT DO NOTHING;", projects);
+            LOGGER.info("Inserted {} Projects", projects.size());
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
