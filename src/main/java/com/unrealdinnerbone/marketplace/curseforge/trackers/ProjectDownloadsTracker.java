@@ -38,15 +38,16 @@ public class ProjectDownloadsTracker implements ICurseTracker<List<ProjectDownlo
             List<PostgresConsumer> postgresConsumers = new ArrayList<>();
             LOGGER.info("Downloads for {}", downloadData.getDownloadDate());
             for (Map.Entry<String, Integer> stringLongEntry : downloadData.modDownloads().entrySet()) {
-                if(projectToSlugMap.containsKey(stringLongEntry.getKey())) {
-                    String slug = projectToSlugMap.get(stringLongEntry.getKey());
+                String key = stringLongEntry.getKey().replace(" ", "-").replace("(", "").replace(")", "").replace("'", "")
+                if(projectToSlugMap.containsKey(key)) {
+                    String slug = projectToSlugMap.get(key);
                     postgresConsumers.add(statement -> {
                         statement.setString(1, slug);
                         statement.setLong(2, stringLongEntry.getValue());
                         statement.setTimestamp(3, Timestamp.from(downloadData.getDownloadDate()));
                     });
                 }else {
-                    LOGGER.warn("Could not find slug for {}", stringLongEntry.getKey());
+                    LOGGER.warn("Could not find slug for {}", key);
                 }
             }
             handler.executeBatchUpdate("INSERT INTO curseforge.project_downloads (project, downloads, time) VALUES (?, ?, ?) ON CONFLICT (project, time) do update set downloads = EXCLUDED.downloads;", postgresConsumers);
