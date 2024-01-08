@@ -28,5 +28,6 @@ public interface ICurseTracker<T> {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return projectToSlugMap;
     }
 }
