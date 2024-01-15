@@ -1,7 +1,8 @@
 package com.unrealdinnerbone.marketplace.curseforge.api;
 
+import com.unrealdinnerbone.curseapi.api.CurseAPI;
+import com.unrealdinnerbone.marketplace.CFHandler;
 import com.unrealdinnerbone.marketplace.Tracker;
-import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.apiutils.result.IResult;
 
 import java.sql.ResultSet;
@@ -11,12 +12,12 @@ import java.util.Map;
 
 public interface ICurseTracker<T> {
 
-    void run(Tracker.Config config, PostgressHandler handler, T t);
+    void run(Tracker.Config config, CFHandler handler, CurseAPI curseAPI, T t);
 
     IResult<T> get();
 
 
-    default Map<String, String> getProjectToSlugMap(PostgressHandler handler) {
+    default Map<String, String> getProjectToSlugMap(CFHandler handler) {
         Map<String, String> projectToSlugMap = new HashMap<>();
         try {
             ResultSet set = handler.getSet("SELECT slug, name from curseforge.projects");

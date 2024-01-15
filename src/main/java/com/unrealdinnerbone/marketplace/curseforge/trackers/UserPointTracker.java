@@ -1,17 +1,17 @@
 package com.unrealdinnerbone.marketplace.curseforge.trackers;
 
+import com.unrealdinnerbone.curseapi.api.CurseAPI;
 import com.unrealdinnerbone.curseauthorsapi.CurseAuthorsAPI;
 import com.unrealdinnerbone.curseauthorsapi.api.UserPointData;
+import com.unrealdinnerbone.marketplace.CFHandler;
 import com.unrealdinnerbone.marketplace.Tracker;
 import com.unrealdinnerbone.marketplace.curseforge.api.ICurseTracker;
-import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.LogHelper;
 import com.unrealdinnerbone.unreallib.apiutils.result.IResult;
 import org.slf4j.Logger;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Objects;
 
 public class UserPointTracker implements ICurseTracker<UserPointData> {
 
@@ -19,7 +19,7 @@ public class UserPointTracker implements ICurseTracker<UserPointData> {
 
 
     @Override
-    public void run(Tracker.Config config, PostgressHandler handler, UserPointData userPointData) {
+    public void run(Tracker.Config config, CFHandler handler, CurseAPI curseAPI, UserPointData userPointData) {
         LOGGER.info("Current User Points: {}", userPointData.userPoints());
         handler.executeUpdate("INSERT INTO curseforge.user_points (points, time) VALUES (?, ?) ON CONFLICT DO NOTHING;", statement -> {
             statement.setLong(1, userPointData.userPoints());

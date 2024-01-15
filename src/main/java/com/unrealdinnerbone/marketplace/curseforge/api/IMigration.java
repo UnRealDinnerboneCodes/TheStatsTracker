@@ -1,8 +1,8 @@
 package com.unrealdinnerbone.marketplace.curseforge.api;
 
-import com.unrealdinnerbone.postgresslib.PostgressHandler;
+import com.unrealdinnerbone.postgresslib.PostgresHandler;
 
 public interface IMigration {
 
-    void run(PostgressHandler handler);
+    void run(PostgresHandler handler);
 }

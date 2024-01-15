@@ -1,8 +1,8 @@
 package com.unrealdinnerbone.marketplace;
 
+import com.unrealdinnerbone.curseapi.api.CurseAPI;
 import com.unrealdinnerbone.marketplace.curseforge.api.ICurseTracker;
 import com.unrealdinnerbone.marketplace.curseforge.trackers.*;
-import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.LogHelper;
 import com.unrealdinnerbone.unreallib.exception.WebResultException;
 import com.unrealdinnerbone.unreallib.json.exception.JsonParseException;
@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 
 import java.util.List;
 
-public record CurseforgeTracker(Tracker.Config config) implements IStatsTracker {
+public record CurseforgeTracker(Tracker.Config config, CurseAPI curseAPI) implements IStatsTracker {
 
     private static final Logger LOGGER = LogHelper.getLogger();
 
@@ -23,11 +23,12 @@ public record CurseforgeTracker(Tracker.Config config) implements IStatsTracker 
             new ProjectDownloadsTracker(),
 //            new ProjectRevenueTracker(),
 //            new TotalDownloadsTracker(),
+            new FileDownloadTracker(),
             new UserPointTracker()
             );
 
     @Override
-    public void run(PostgressHandler handler) {
+    public void run(CFHandler handler, CurseAPI curseAPI) {
         for (ICurseTracker<?> tracker : trackers) {
             try {
                 run(handler, tracker);
@@ -38,7 +39,7 @@ public record CurseforgeTracker(Tracker.Config config) implements IStatsTracker 
 
     }
 
-    public <T> void run(PostgressHandler postgressHandler, ICurseTracker<T> tracker) throws JsonParseException, WebResultException {
-        tracker.run(config, postgressHandler, tracker.get().getNow());
+    public <T> void run(CFHandler postgresHandler, ICurseTracker<T> tracker) throws JsonParseException, WebResultException {
+        tracker.run(config, postgresHandler, curseAPI, tracker.get().getNow());
     }
 }

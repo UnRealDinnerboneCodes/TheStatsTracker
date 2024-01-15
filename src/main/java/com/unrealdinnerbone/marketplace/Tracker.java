@@ -4,48 +4,98 @@ import com.unrealdinnerbone.config.api.ConfigCreator;
 import com.unrealdinnerbone.config.api.exception.ConfigException;
 import com.unrealdinnerbone.config.config.ConfigValue;
 import com.unrealdinnerbone.config.impl.provider.EnvProvider;
+import com.unrealdinnerbone.curseapi.api.CurseAPI;
+import com.unrealdinnerbone.curseapi.quaries.ModQuery;
+import com.unrealdinnerbone.marketplace.database.tasks.CreateTask;
 import com.unrealdinnerbone.postgresslib.PostgresConfig;
-import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.LogHelper;
 import com.unrealdinnerbone.unreallib.TaskScheduler;
 import org.slf4j.Logger;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Tracker
 {
     public static final Logger LOGGER = LogHelper.getLogger();
 
+    private static final EnvProvider ENV_PROVIDER = new EnvProvider();
 
-    public static void main(String[] args) throws SQLException {
-        LOGGER.info("Loading Me!");
-        EnvProvider<PostgresConfig> envProvider = new EnvProvider<>();
-        PostgresConfig postgresConfig = envProvider.loadConfig("postgres", PostgresConfig::new);
-        Config config = envProvider.loadConfig("general", Config::new);
+    private static final PostgresConfig POSTGRES_CONFIG = ENV_PROVIDER.loadConfig("postgres", PostgresConfig::new);
+
+    private static final Config GENERAL_CONFIG = ENV_PROVIDER.loadConfig("general", Config::new);
+
+
+    public static void main(String[] args) {
+        LOGGER.info("Starting Curseforge Tracker!");
+
         try {
-            envProvider.read();
+            ENV_PROVIDER.read();
         } catch (ConfigException e) {
             LOGGER.error("Error while loading config", e);
             return;
         }
-        LOGGER.info("Host: {} Port: {} Database: {} Username: {} Password: {}", postgresConfig.getHost().get(), postgresConfig.getPort().get(), postgresConfig.getDb().get(), postgresConfig.getUsername().get(), postgresConfig.getPassword().get());
-        LOGGER.info("Running tracker every {} hours", config.getTime().get());
-        PostgressHandler postgressHandler = new PostgressHandler(postgresConfig);
-        register(postgressHandler, TimeUnit.HOURS, config.getTime().get(), new CurseforgeTracker(config));
-        if(config.getEnableStore().get()) {
-            register(postgressHandler, TimeUnit.HOURS, config.getTime().get(), new CurseforgeStoreTracker());
+        if(GENERAL_CONFIG.getDebug().get()) {
+            LOGGER.info("Host: {} Port: {} Database: {} Username: {} Password: {}", POSTGRES_CONFIG.getHost().get(), POSTGRES_CONFIG.getPort().get(), POSTGRES_CONFIG.getDb().get(), POSTGRES_CONFIG.getUsername().get(), POSTGRES_CONFIG.getPassword().get());
+
+        }
+        LOGGER.info("Running CurseForge tracker every {} hour(s)", GENERAL_CONFIG.getTime().get());
+        CFHandler postgresHandler;
+        try {
+            postgresHandler = new CFHandler(POSTGRES_CONFIG);
+        } catch (SQLException e) {
+            LOGGER.error("Error while connecting to database", e);
+            return;
+        }
+        CurseAPI curseAPI = new CurseAPI(GENERAL_CONFIG.getCurseApiKey().get(), GENERAL_CONFIG.getCurseApiUrl().get());
+        if(runTasks(GENERAL_CONFIG, postgresHandler, curseAPI)) {
+            register(curseAPI, postgresHandler, TimeUnit.HOURS, GENERAL_CONFIG.getTime().get(), new CurseforgeTracker(GENERAL_CONFIG, curseAPI));
+        }
+    }
+
+
+    public static boolean runTasks(Tracker.Config config, CFHandler handler, CurseAPI curseAPI) {
+        try {
+            new CreateTask().run(config, handler, curseAPI);
+        }catch (SQLException e) {
+            LOGGER.error("Failed to create database", e);
+            return false;
+        }
+
+
+        int version;
+        try {
+            ResultSet set = handler.getSet("select * from curseforge.version");
+            if(set.next()) {
+                version = set.getInt("id");
+            }else {
+                LOGGER.error("Failed to get version");
+                return false;
+            }
+        }catch (SQLException e) {
+            LOGGER.error("Failed to get version", e);
+            return false;
+        }
+        LOGGER.info("Current Version: {}", version);
+        LOGGER.info("Running Migrations");
+        if(Migration.runMigrations(version, config, handler, curseAPI)) {
+            LOGGER.info("Finished Migrations");
+            return true;
+        }else {
+            LOGGER.error("Failed to run migrations");
+            return false;
         }
 
     }
 
-    public static void register(PostgressHandler handler, TimeUnit unit, int time, IStatsTracker tracker) {
+    public static void register(CurseAPI curseAPI, CFHandler handler, TimeUnit unit, int time, IStatsTracker tracker) {
         TaskScheduler.scheduleRepeatingTask(time, unit, new TimerTask() {
             @Override
             public void run() {
                 try {
-                    tracker.run(handler);
+                    tracker.run(handler, curseAPI);
                 }catch (Exception e) {
                     LOGGER.error("Error while running tracker", e);
                 }
@@ -61,13 +111,39 @@ public class Tracker
         private final ConfigValue<Boolean> discordEnabled;
 
         private final ConfigValue<Boolean> trackThings;
+        private final ConfigValue<Boolean> debug;
+
+        private final ConfigValue<String> curseApiUrl;
+
+        private final ConfigValue<String> curseApiKey;
+
+        private final ConfigValue<Map<String, Integer>> slugMap;
         public Config(ConfigCreator creator) {
             this.time = creator.createInteger("time", 12);
-            this.enableStore = creator.createBoolean("enableStore", false);
-            this.discordEnabled = creator.createBoolean("discordEnabled", true);
-            this.trackThings = creator.createBoolean("trackThings", true);
+            this.enableStore = creator.createBoolean("enable_store", false);
+            this.discordEnabled = creator.createBoolean("discord_enabled", true);
+            this.trackThings = creator.createBoolean("track_things", true);
+            this.debug = creator.createBoolean("debug", false);
+            this.curseApiUrl = creator.createString("curse_api_url", "https://api.curseforge.com/v1/");
+            this.curseApiKey = creator.createString("curse_api_key", "");
+            this.slugMap = creator.createMap("slug_map", new HashMap<>(), Integer.class);
         }
 
+        public ConfigValue<Map<String, Integer>> getSlugMap() {
+            return slugMap;
+        }
+
+        public ConfigValue<String> getCurseApiKey() {
+            return curseApiKey;
+        }
+
+        public ConfigValue<String> getCurseApiUrl() {
+            return curseApiUrl;
+        }
+
+        public ConfigValue<Boolean> getDebug() {
+            return debug;
+        }
 
         public ConfigValue<Boolean> getTrackThings() {
             return trackThings;

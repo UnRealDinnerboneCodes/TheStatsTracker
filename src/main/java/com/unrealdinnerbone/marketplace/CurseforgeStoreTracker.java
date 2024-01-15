@@ -1,22 +1,19 @@
 package com.unrealdinnerbone.marketplace;
 
+import com.unrealdinnerbone.curseapi.api.CurseAPI;
 import com.unrealdinnerbone.curseauthorsapi.CurseAuthorsAPI;
 import com.unrealdinnerbone.curseauthorsapi.api.CategoryData;
 import com.unrealdinnerbone.curseauthorsapi.api.ItemData;
-import com.unrealdinnerbone.postgresslib.PostgresConsumer;
-import com.unrealdinnerbone.postgresslib.PostgressHandler;
 import com.unrealdinnerbone.unreallib.exception.WebResultException;
 import com.unrealdinnerbone.unreallib.json.exception.JsonParseException;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.concurrent.ExecutionException;
 
 public class CurseforgeStoreTracker implements IStatsTracker{
 
     @Override
-    public void run(PostgressHandler handler) throws ExecutionException, InterruptedException, WebResultException, JsonParseException {
+    public void run(CFHandler handler, CurseAPI curseAPI) throws ExecutionException, InterruptedException, WebResultException, JsonParseException {
         for (CategoryData category : CurseAuthorsAPI.getRewardStore().getNow().categories()) {
             handler.executeUpdate("INSERT INTO curseforge.reward_group (id, name) VALUES (?, ?) ON CONFLICT (id) DO UPDATE SET name = ?;", preparedStatement -> {
                 preparedStatement.setInt(1, category.id());
