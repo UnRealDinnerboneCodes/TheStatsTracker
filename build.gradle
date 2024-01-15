@@ -12,7 +12,7 @@ dependencies {
     shade("com.unrealdinnerbone:UnRealLib:8.2.4")
     shade("com.unrealdinnerbone:CurseAuthorsAPI:1.0.7")
     shade('com.unrealdinnerbone:PostgressLib:2.1.5')
-    shade('com.unrealdinnerbone:UnRealConfig:1.2.3')
+    shade("com.unrealdinnerbone:UnRealConfig2:1.2.4")
     shade("com.google.guava:guava:31.1-jre")
     shade 'org.fusesource.jansi:jansi:2.4.0'
     shade 'ch.qos.logback:logback-classic:1.4.5'
