@@ -6,10 +6,8 @@ import com.unrealdinnerbone.curseauthorsapi.api.Project;
 import com.unrealdinnerbone.marketplace.CFHandler;
 import com.unrealdinnerbone.marketplace.Tracker;
 import com.unrealdinnerbone.marketplace.curseforge.api.ICurseTracker;
-import com.unrealdinnerbone.postgresslib.PostgresConsumer;
 import com.unrealdinnerbone.unreallib.apiutils.result.IResult;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectSlugTracker implements ICurseTracker<List<Project>> {

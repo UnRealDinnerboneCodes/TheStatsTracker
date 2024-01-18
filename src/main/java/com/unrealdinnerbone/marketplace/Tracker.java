@@ -6,6 +6,8 @@ import com.unrealdinnerbone.config.config.ConfigValue;
 import com.unrealdinnerbone.config.impl.provider.EnvProvider;
 import com.unrealdinnerbone.curseapi.api.CurseAPI;
 import com.unrealdinnerbone.curseapi.quaries.ModQuery;
+import com.unrealdinnerbone.curseauthorsapi.CurseAuthorsAPI;
+import com.unrealdinnerbone.curseauthorsapi.api.Project;
 import com.unrealdinnerbone.marketplace.database.tasks.CreateTask;
 import com.unrealdinnerbone.postgresslib.PostgresConfig;
 import com.unrealdinnerbone.unreallib.LogHelper;
@@ -29,6 +31,8 @@ public class Tracker
 
 
     public static void main(String[] args) {
+
+
         LOGGER.info("Starting Curseforge Tracker!");
 
         try {

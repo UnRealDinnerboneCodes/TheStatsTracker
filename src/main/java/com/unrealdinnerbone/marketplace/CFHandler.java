@@ -17,7 +17,7 @@ public class CFHandler extends PostgresHandler {
     }
 
     public void addProject(String name, String slug, int id) {
-        executeUpdate("INSERT INTO projects (name, slug, id) VALUES (?, ?, ?) ON CONFLICT DO NOTHING;", preparedStatement -> {
+        executeUpdate("INSERT INTO curseforge.projects (name, slug, id) VALUES (?, ?, ?) ON CONFLICT DO NOTHING;", preparedStatement -> {
             preparedStatement.setString(1, name.toLowerCase());
             preparedStatement.setString(2, slug.toLowerCase());
             preparedStatement.setInt(3, id);
