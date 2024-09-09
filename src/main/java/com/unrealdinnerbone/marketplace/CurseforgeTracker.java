@@ -44,7 +44,7 @@ public record CurseforgeTracker(Tracker.Config config, CurseAPI curseAPI) implem
     }
 
     public static boolean isStringLoader(String loader) {
-        return loader.equalsIgnoreCase("forge") || loader.equals("fabric") || loader.equals("NeoForge");
+        return loader.equalsIgnoreCase("forge") || loader.equalsIgnoreCase("fabric") || loader.equalsIgnoreCase("NeoForge");
     }
 
     public static boolean isStringJava(String loader) {

@@ -4,6 +4,7 @@ import com.unrealdinnerbone.curseapi.api.CurseAPI;
 import com.unrealdinnerbone.marketplace.database.IDBTask;
 import com.unrealdinnerbone.marketplace.database.tasks.MigrateV2;
 import com.unrealdinnerbone.marketplace.database.tasks.MigrateV3;
+import com.unrealdinnerbone.marketplace.database.tasks.MigrateV4;
 import com.unrealdinnerbone.unreallib.LogHelper;
 import org.slf4j.Logger;
 
@@ -20,6 +21,7 @@ public class Migration {
     static {
         MIGRATIONS.put(2, new MigrateV2());
         MIGRATIONS.put(3, new MigrateV3());
+        MIGRATIONS.put(4, new MigrateV4());
     }
 
     public static boolean runMigrations(int currentVersion, Tracker.Config config, CFHandler handler, CurseAPI api) {
