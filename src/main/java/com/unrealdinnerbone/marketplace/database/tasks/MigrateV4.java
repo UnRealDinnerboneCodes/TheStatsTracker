@@ -24,9 +24,14 @@ public class MigrateV4 implements IDBTask {
             int id = set.getInt("id");
             LOGGER.info("Updating file id: {}", id);
             String[] versions = (String[]) set.getArray("versions").getArray();
+            String[] loaderVersionsArray = (String[]) set.getArray("loader_versions").getArray();
+            String[] javaVersionsArray = (String[]) set.getArray("java_versions").getArray();
             List<String> minecraftVersions = new ArrayList<>();
             List<String> loaderVersions = new ArrayList<>();
             List<String> javaVersions = new ArrayList<>();
+            loaderVersions.addAll(List.of(loaderVersionsArray));
+            javaVersions.addAll(List.of(javaVersionsArray));
+
             for (String version : versions) {
                 if(CurseforgeTracker.isStringLoader(version)) {
                     loaderVersions.add(version);

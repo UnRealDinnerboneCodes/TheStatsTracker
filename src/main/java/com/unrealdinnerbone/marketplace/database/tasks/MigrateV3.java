@@ -2,14 +2,20 @@ package com.unrealdinnerbone.marketplace.database.tasks;
 
 import com.unrealdinnerbone.curseapi.api.CurseAPI;
 import com.unrealdinnerbone.marketplace.CFHandler;
+import com.unrealdinnerbone.marketplace.CurseforgeTracker;
 import com.unrealdinnerbone.marketplace.Tracker;
 import com.unrealdinnerbone.marketplace.database.IDBTask;
+import com.unrealdinnerbone.postgresslib.PostgresConsumer;
 import com.unrealdinnerbone.unreallib.LogHelper;
 import org.slf4j.Logger;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
 public class MigrateV3 implements IDBTask {
 
-    private static final MigrateV4 MIGRATE_V4 = new MigrateV4();
 
     private static final Logger LOGGER = LogHelper.getLogger();
 
@@ -28,6 +34,40 @@ public class MigrateV3 implements IDBTask {
                     add java_versions text[];
                 """);
         LOGGER.info("Adding java_versions column to projects");
-        MIGRATE_V4.run(config, handler, curseAPI);
+
+        LOGGER.info("Updating loader_versions and java_versions");
+        ResultSet set = handler.getSet("select * from curseforge.file");
+        while (set.next()) {
+            int id = set.getInt("id");
+            LOGGER.info("Updating file id: {}", id);
+            String[] versions = (String[]) set.getArray("versions").getArray();
+            List<String> minecraftVersions = new ArrayList<>();
+            List<String> loaderVersions = new ArrayList<>();
+            List<String> javaVersions = new ArrayList<>();
+            for (String version : versions) {
+                if(CurseforgeTracker.isStringLoader(version)) {
+                    loaderVersions.add(version);
+                    continue;
+                }
+                if(CurseforgeTracker.isStringJava(version)) {
+                    javaVersions.add(version);
+                    continue;
+                }
+                minecraftVersions.add(version);
+            }
+            handler.executeUpdate("""
+                    update curseforge.file
+                    set versions = ?,
+                        loader_versions = ?,
+                        java_versions = ?
+                    where id = ?;
+                    """, preparedStatement -> {
+                preparedStatement.setArray(1, handler.createArray("text", minecraftVersions.toArray()));
+                preparedStatement.setArray(2, handler.createArray("text", loaderVersions.toArray()));
+                preparedStatement.setArray(3, handler.createArray("text", javaVersions.toArray()));
+                preparedStatement.setInt(4, id);
+            });
+        }
+        LOGGER.info("Updatied loader_versions and java_versions for projects");
     }
 }
