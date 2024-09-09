@@ -42,4 +42,12 @@ public record CurseforgeTracker(Tracker.Config config, CurseAPI curseAPI) implem
     public <T> void run(CFHandler postgresHandler, ICurseTracker<T> tracker) throws JsonParseException, WebResultException {
         tracker.run(config, postgresHandler, curseAPI, tracker.get().getNow());
     }
+
+    public static boolean isStringLoader(String loader) {
+        return loader.equalsIgnoreCase("forge") || loader.equals("fabric") || loader.equals("NeoForge");
+    }
+
+    public static boolean isStringJava(String loader) {
+        return loader.toLowerCase().contains("java");
+    }
 }

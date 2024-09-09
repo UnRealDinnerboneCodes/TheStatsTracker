@@ -10,6 +10,7 @@ import com.unrealdinnerbone.unreallib.apiutils.result.IResult;
 
 import java.util.List;
 
+//todo userPermissionIds has 23
 public class ProjectSlugTracker implements ICurseTracker<List<Project>> {
     @Override
     public void run(Tracker.Config config, CFHandler handler, CurseAPI curseAPI, List<Project> project) {

@@ -6,6 +6,7 @@ import com.unrealdinnerbone.curseauthorsapi.api.File;
 import com.unrealdinnerbone.curseauthorsapi.api.GameVersion;
 import com.unrealdinnerbone.curseauthorsapi.api.Project;
 import com.unrealdinnerbone.marketplace.CFHandler;
+import com.unrealdinnerbone.marketplace.CurseforgeTracker;
 import com.unrealdinnerbone.marketplace.Tracker;
 import com.unrealdinnerbone.marketplace.curseforge.api.ICurseTracker;
 import com.unrealdinnerbone.postgresslib.PostgresConsumer;
@@ -17,6 +18,7 @@ import java.sql.Array;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class FileDownloadTracker implements ICurseTracker<List<Project>> {
 
@@ -29,13 +31,30 @@ public class FileDownloadTracker implements ICurseTracker<List<Project>> {
             try {
                 for (File file : CurseAuthorsAPI.getProjectFiles(project.id()).getNow()) {
                     LOGGER.info("File: {} has {} downloads", file.fileName(), file.downloads());
-                    String[] versions = file.gameVersions().stream().map(GameVersion::label).toArray(String[]::new);
+                    Stream<String> versions = file.gameVersions().stream().map(GameVersion::label);
+                    List<String> javaVersions = new ArrayList<>();
+                    List<String> loaderVersions = new ArrayList<>();
+                    List<String> minecraftVersions = new ArrayList<>();
+                    for (String version : versions.toArray(String[]::new)) {
+                        if(CurseforgeTracker.isStringLoader(version)) {
+                            loaderVersions.add(version);
+                        }
+                        if(CurseforgeTracker.isStringJava(version)) {
+                            javaVersions.add(version);
+                        }
+                        minecraftVersions.add(version);
+
+                    }
                     files.add(preparedStatement -> {
                         preparedStatement.setInt(1, project.id());
                         preparedStatement.setInt(2, file.id());
-                        Array text = handler.createArray("text", versions);
+                        Array text = handler.createArray("text", minecraftVersions.toArray());
                         preparedStatement.setArray(3, text);
-                        preparedStatement.setString(4, file.fileName());
+                        Array loader = handler.createArray("text", loaderVersions.toArray());
+                        preparedStatement.setArray(4, loader);
+                        Array java = handler.createArray("text", javaVersions.toArray());
+                        preparedStatement.setArray(5, java);
+                        preparedStatement.setString(6, file.fileName());
                     });
                     Instant startOfToday = Instant.now().truncatedTo(java.time.temporal.ChronoUnit.DAYS);
 
@@ -48,7 +67,7 @@ public class FileDownloadTracker implements ICurseTracker<List<Project>> {
             }catch (Exception e) {
                 LOGGER.error("Failed to get files for project: {}", project.name(), e);
             }
-            handler.executeBatchUpdate("INSERT INTO curseforge.file (project, id, versions, name) VALUES (?, ?, ?, ?) ON CONFLICT (id) do update set versions = EXCLUDED.versions, name = EXCLUDED.name;", files);
+            handler.executeBatchUpdate("INSERT INTO curseforge.file (project, id, versions, java_versions, loader_versions, name) VALUES (?, ?, ?, ?) ON CONFLICT (id) do update set versions = EXCLUDED.versions, name = EXCLUDED.name;", files);
             handler.executeBatchUpdate("INSERT INTO curseforge.file_downloads (file, timestamp, downloads) VALUES (?, ?, ?) ON CONFLICT (file, timestamp) do update set downloads = EXCLUDED.downloads;", fileDownloads);
         }
     }

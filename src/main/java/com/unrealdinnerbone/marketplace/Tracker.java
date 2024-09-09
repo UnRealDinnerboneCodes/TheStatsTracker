@@ -60,6 +60,7 @@ public class Tracker
     }
 
 
+
     public static boolean runTasks(Tracker.Config config, CFHandler handler, CurseAPI curseAPI) {
         try {
             new CreateTask().run(config, handler, curseAPI);

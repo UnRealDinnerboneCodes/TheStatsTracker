@@ -68,6 +68,8 @@ create table curseforge.file
         constraint file_id
             unique,
     versions text[],
+    java_versions text[],
+    loader_versions text[],
     name     text
 );
 
