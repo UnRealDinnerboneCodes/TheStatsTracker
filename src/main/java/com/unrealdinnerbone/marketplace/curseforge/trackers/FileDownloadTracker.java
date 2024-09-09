@@ -38,12 +38,13 @@ public class FileDownloadTracker implements ICurseTracker<List<Project>> {
                     for (String version : versions.toArray(String[]::new)) {
                         if(CurseforgeTracker.isStringLoader(version)) {
                             loaderVersions.add(version);
+                            continue;
                         }
                         if(CurseforgeTracker.isStringJava(version)) {
                             javaVersions.add(version);
+                            continue;
                         }
                         minecraftVersions.add(version);
-
                     }
                     files.add(preparedStatement -> {
                         preparedStatement.setInt(1, project.id());
