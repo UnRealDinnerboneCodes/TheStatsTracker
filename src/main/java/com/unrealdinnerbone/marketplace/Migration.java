@@ -18,6 +18,7 @@ public class Migration {
 
     static {
         MIGRATIONS.put(2, new MigrateV2());
+        MIGRATIONS.put(3, new MigrateV2());
     }
 
     public static boolean runMigrations(int currentVersion, Tracker.Config config, CFHandler handler, CurseAPI api) {
