@@ -67,7 +67,7 @@ public class FileDownloadTracker implements ICurseTracker<List<Project>> {
             }catch (Exception e) {
                 LOGGER.error("Failed to get files for project: {}", project.name(), e);
             }
-            handler.executeBatchUpdate("INSERT INTO curseforge.file (project, id, versions, java_versions, loader_versions, name) VALUES (?, ?, ?, ?) ON CONFLICT (id) do update set versions = EXCLUDED.versions, name = EXCLUDED.name;", files);
+            handler.executeBatchUpdate("INSERT INTO curseforge.file (project, id, versions, java_versions, loader_versions, name) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (id) do update set versions = EXCLUDED.versions, name = EXCLUDED.name;", files);
             handler.executeBatchUpdate("INSERT INTO curseforge.file_downloads (file, timestamp, downloads) VALUES (?, ?, ?) ON CONFLICT (file, timestamp) do update set downloads = EXCLUDED.downloads;", fileDownloads);
         }
     }

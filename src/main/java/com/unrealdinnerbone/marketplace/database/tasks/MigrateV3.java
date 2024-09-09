@@ -46,9 +46,11 @@ public class MigrateV3 implements IDBTask {
             for (String version : versions) {
                 if(CurseforgeTracker.isStringLoader(version)) {
                     loaderVersions.add(version);
+                    continue;
                 }
                 if(CurseforgeTracker.isStringJava(version)) {
                     javaVersions.add(version);
+                    continue;
                 }
                 minecraftVersions.add(version);
             }
