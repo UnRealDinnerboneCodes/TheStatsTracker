@@ -10,7 +10,7 @@ apply from: 'https://raw.githubusercontent.com/UnRealDinnerbone/GradleHelpers/he
 
 dependencies {
     shade("com.unrealdinnerbone:UnRealLib:8.2.4")
-    shade("com.unrealdinnerbone:CurseAuthorsAPI:1.0.7")
+    shade("com.unrealdinnerbone:CurseAuthorsAPI:1.0.8")
     shade('com.unrealdinnerbone:PostgressLib:2.1.5')
     shade("com.unrealdinnerbone:UnRealConfig2:1.2.4")
     shade("com.google.guava:guava:31.1-jre")
