@@ -9,7 +9,7 @@ COPY src /build/src
 RUN gradle shadowJar
 RUN ls -l /build/build/libs/
 
-FROM eclipse-temurin:21
+FROM eclipse-temurin:21-jdk-alpine
 COPY --from=builder "/build/build/libs/build-3.0.0-all.jar" "ApolloStats-1.0.0-all.jar"
 
 
